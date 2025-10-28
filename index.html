@@ -1,4 +1,4 @@
-<!DOCTYPE html> 
+<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
@@ -17,17 +17,50 @@
     }
     h1 { font-size: 2.5rem; margin-bottom: 0.2em; }
     h2 { font-style: italic; margin-bottom: 1em; }
-    .game-container { position: relative; width: 400px; height: 300px; }
+
+    .game-container {
+      position: relative;
+      width: 400px;
+      height: 300px;
+    }
+
     .axis {
       position: absolute;
-      background: #f00;
+      background: #000;
     }
-    .x-axis { width: 100%; height: 2px; bottom: 50px; left: 0; }
-    .y-axis { width: 2px; height: 100%; left: 50%; bottom: 0; transform: translateX(-50%); background: #333; }
-    .label { position: absolute; font-style: italic; font-size: 0.8rem; }
+    .x-axis {
+      width: 100%;
+      height: 2px;
+      bottom: 50px;
+      left: 0;
+      background: black;
+    }
+    .y-axis {
+      width: 2px;
+      height: 100%;
+      left: 50%;
+      bottom: 0;
+      transform: translateX(-50%);
+      background: red;
+    }
+
+    .label {
+      position: absolute;
+      font-style: italic;
+      font-size: 0.8rem;
+    }
     .left-label { top: 20px; left: 10px; }
     .right-label { top: 20px; right: 10px; }
-    .answer-boxes { position: absolute; bottom: 10px; display: flex; gap: 5px; }
+    .x-label { bottom: 30px; right: 10px; }
+    .y-label { top: 10px; left: 52%; color: red; }
+
+    svg { position: absolute; bottom: 50px; }
+
+    .answer-boxes {
+      display: flex;
+      gap: 5px;
+      margin-top: 270px; /* align at bottom of graph */
+    }
     .letter-box {
       width: 30px; height: 30px;
       border: 1px solid #333;
@@ -35,8 +68,19 @@
       font-family: monospace; font-size: 1rem;
       background-color: white;
     }
-    .hint { font-size: 0.75rem; font-style: italic; color: #666; margin-top: 10px; display: none; }
-    button { margin-top: 20px; padding: 5px 10px; }
+
+    #hint-text {
+      font-size: 0.75rem;
+      font-style: italic;
+      color: #666;
+      margin-top: 10px;
+      display: none;
+    }
+
+    button {
+      margin-top: 10px;
+      padding: 5px 10px;
+    }
   </style>
 </head>
 <body>
@@ -49,13 +93,20 @@
 
     <span class="label left-label" id="left-label">permit</span>
     <span class="label right-label" id="right-label">restrict</span>
+    <span class="label x-label">transverse</span>
+    <span class="label y-label">conjugate</span>
 
+    <!-- Dashed parabola -->
+    <svg width="400" height="200" viewBox="0 0 400 200">
+      <path d="M 50 150 Q 200 0 350 150" stroke="#4a8a8a" stroke-width="2" stroke-dasharray="6 6" fill="none"/>
+    </svg>
+
+    <!-- Answer boxes -->
     <div class="answer-boxes" id="answer-boxes"></div>
-
-    <p class="hint" id="hint-text">A word that both authorizes and penalizes an action.</p>
   </div>
 
   <button id="show-hint">Show Hint</button>
+  <p id="hint-text">A word that both authorizes and penalizes an action.</p>
 
   <script>
     const word = "SANCTION";
@@ -63,26 +114,26 @@
     const hintText = document.getElementById("hint-text");
     const showHintBtn = document.getElementById("show-hint");
 
-    // Create empty answer boxes
+    // Create input boxes
     for (let i = 0; i < word.length; i++) {
-      const box = document.createElement("div");
+      const box = document.createElement("input");
+      box.type = "text";
+      box.maxLength = 1;
       box.className = "letter-box";
       box.dataset.index = i;
       answerBoxes.appendChild(box);
     }
 
-    // Listen for keypresses
-    document.addEventListener("keydown", (e) => {
-      const key = e.key.toUpperCase();
-      for (let box of answerBoxes.children) {
-        if (!box.textContent && word[box.dataset.index] === key) {
-          box.textContent = key;
-          break;
-        }
+    // Move focus automatically
+    answerBoxes.addEventListener("input", (e) => {
+      const target = e.target;
+      if (target.value.length === 1) {
+        const next = target.nextElementSibling;
+        if (next) next.focus();
       }
     });
 
-    // Show hint button
+    // Show hint
     showHintBtn.addEventListener("click", () => {
       hintText.style.display = "block";
     });
