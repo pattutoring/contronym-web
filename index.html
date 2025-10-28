@@ -54,16 +54,6 @@
 
     svg { position: absolute; bottom: 50px; }
 
-    .letter-box {
-      width: 30px; height: 30px;
-      border: 1px solid #333;
-      display: flex; justify-content: center; align-items: center;
-      font-family: monospace; font-size: 1rem;
-      background-color: white;
-      text-align: center;
-      margin: 2px;
-    }
-
     #permit, #restrict {
       font-weight: bold;
     }
@@ -79,7 +69,7 @@
     <span class="label x-label">transverse</span>
     <span class="label y-label">conjugate</span>
 
-    <!-- Steep U-shaped parabola -->
+    <!-- U-shaped parabola opening upward -->
     <svg width="400" height="300" viewBox="0 0 400 300">
       <path id="parabola" d="M 60 250 Q 200 50 340 250" stroke="#00bfff" stroke-width="2" stroke-dasharray="6 6" fill="none"/>
     </svg>
@@ -95,18 +85,17 @@
     const permit = document.getElementById("permit");
     const restrict = document.getElementById("restrict");
 
-    // Place labels at the ends of the parabola
     const pathLength = path.getTotalLength();
 
     // Start point for 'permit'
     const startPoint = path.getPointAtLength(0);
     permit.style.left = `${startPoint.x - permit.offsetWidth/2}px`;
-    permit.style.bottom = `${300 - startPoint.y + 50}px`; // adjust for container bottom
+    permit.style.bottom = `${300 - startPoint.y + 50}px`;
 
     // End point for 'restrict'
     const endPoint = path.getPointAtLength(pathLength);
     restrict.style.left = `${endPoint.x - restrict.offsetWidth/2}px`;
-    restrict.style.bottom = `${300 - endPoint.y + 50}px`; // adjust for container bottom
+    restrict.style.bottom = `${300 - endPoint.y + 50}px`;
   </script>
 </body>
 </html>
