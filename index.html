@@ -49,10 +49,10 @@
       font-style: italic;
       font-size: 0.8rem;
     }
-    .left-label { top: 20px; left: 10px; }
-    .right-label { top: 20px; right: 10px; }
-    .x-label { bottom: 30px; right: 10px; }
-    .y-label { top: 10px; left: 52%; color: red; }
+    .left-label { bottom: 180px; left: 20px; }   /* left side of parabola */
+    .right-label { bottom: 180px; right: 20px; } /* right side of parabola */
+    .x-label { bottom: 30px; right: 10px; font-style: italic; }
+    .y-label { top: 10px; left: 52%; color: black; font-style: italic; }
 
     svg { position: absolute; bottom: 50px; }
 
@@ -67,6 +67,7 @@
       display: flex; justify-content: center; align-items: center;
       font-family: monospace; font-size: 1rem;
       background-color: white;
+      text-align: center;
     }
 
     #hint-text {
@@ -75,6 +76,13 @@
       color: #666;
       margin-top: 10px;
       display: none;
+    }
+
+    #message {
+      font-size: 0.9rem;
+      color: #008080;
+      margin-top: 10px;
+      font-style: italic;
     }
 
     button {
@@ -98,7 +106,7 @@
 
     <!-- Dashed parabola -->
     <svg width="400" height="200" viewBox="0 0 400 200">
-      <path d="M 50 150 Q 200 0 350 150" stroke="#4a8a8a" stroke-width="2" stroke-dasharray="6 6" fill="none"/>
+      <path d="M 50 50 Q 200 200 350 50" stroke="#00bfff" stroke-width="2" stroke-dasharray="6 6" fill="none"/>
     </svg>
 
     <!-- Answer boxes -->
@@ -107,12 +115,14 @@
 
   <button id="show-hint">Show Hint</button>
   <p id="hint-text">A word that both authorizes and penalizes an action.</p>
+  <p id="message"></p>
 
   <script>
     const word = "SANCTION";
     const answerBoxes = document.getElementById("answer-boxes");
     const hintText = document.getElementById("hint-text");
     const showHintBtn = document.getElementById("show-hint");
+    const message = document.getElementById("message");
 
     // Create input boxes
     for (let i = 0; i < word.length; i++) {
@@ -127,9 +137,22 @@
     // Move focus automatically
     answerBoxes.addEventListener("input", (e) => {
       const target = e.target;
+      const index = parseInt(target.dataset.index);
+      target.value = target.value.toUpperCase();
+
+      // Move focus to next box
       if (target.value.length === 1) {
-        const next = target.nextElementSibling;
+        const next = answerBoxes.children[index + 1];
         if (next) next.focus();
+      }
+
+      // Check if full word is correct
+      let current = '';
+      for (let box of answerBoxes.children) {
+        current += box.value;
+      }
+      if (current === word) {
+        message.textContent = "You’ve found the correct inversion of the neutrino — it is its own antineutrino!";
       }
     });
 
