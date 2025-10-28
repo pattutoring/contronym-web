@@ -94,9 +94,8 @@
     #neutrino {
       position: absolute;
       font-size: 1.5rem;
-      top: 0;
-      left: 0;
-      z-index: 10;
+      top: 20px;  /* fixed y above parabola */
+      left: 180px; /* position near center */
       user-select: none;
       pointer-events: none;
     }
@@ -122,9 +121,9 @@
     <span class="label x-label">transverse</span>
     <span class="label y-label">conjugate</span>
 
-    <!-- Dashed parabola -->
+    <!-- Steeper dashed parabola -->
     <svg width="400" height="200" viewBox="0 0 400 200">
-      <path d="M 50 50 Q 200 250 350 50" stroke="#00bfff" stroke-width="2" stroke-dasharray="6 6" fill="none"/>
+      <path d="M 50 50 Q 200 300 350 50" stroke="#00bfff" stroke-width="2" stroke-dasharray="6 6" fill="none"/>
     </svg>
 
     <!-- Answer boxes -->
@@ -182,45 +181,20 @@
       hintText.style.display = "block";
     });
 
-    // Neutrino animation
-    const neutrino = document.getElementById("neutrino");
+    // Draw static neutrino path
     const trailCanvas = document.getElementById("trail");
     const ctx = trailCanvas.getContext("2d");
     trailCanvas.width = 400;
     trailCanvas.height = 300;
 
-    let t = 0;
-    const radiusX = 150;
-    const radiusY = 50;
-    const centerX = 200;
-    const centerY = 50;
-
-    function animate() {
-      // Slightly fade trail
-      ctx.fillStyle = "rgba(249,247,242,0.1)";
-      ctx.fillRect(0, 0, trailCanvas.width, trailCanvas.height);
-
-      // Neutrino position (circular loop above parabola)
-      const x = centerX + radiusX * Math.cos(t);
-      const y = centerY + radiusY * Math.sin(t);
-
-      // Draw dashed trail
-      ctx.beginPath();
-      ctx.setLineDash([5, 5]);
-      ctx.moveTo(neutrino.offsetLeft + 7.5, neutrino.offsetTop + 7.5);
-      ctx.lineTo(x, y);
-      ctx.strokeStyle = "#000";
-      ctx.stroke();
-
-      // Move neutrino
-      neutrino.style.left = x - 7.5 + "px";
-      neutrino.style.top = y - 7.5 + "px";
-
-      t += 0.05;
-      requestAnimationFrame(animate);
-    }
-
-    animate();
+    ctx.beginPath();
+    ctx.setLineDash([5, 5]);
+    // example trail path above parabola
+    ctx.moveTo(50, 30);
+    ctx.quadraticCurveTo(200, 0, 350, 30);
+    ctx.strokeStyle = "#000";
+    ctx.lineWidth = 1;
+    ctx.stroke();
   </script>
 </body>
 </html>
