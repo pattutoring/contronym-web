@@ -52,7 +52,10 @@
     .x-label { bottom: 30px; right: 10px; font-style: italic; }
     .y-label { top: 10px; left: 52%; color: black; font-style: italic; }
 
-    svg { position: absolute; bottom: 50px; }
+    svg {
+      position: absolute;
+      bottom: 50px; /* aligns bottom of SVG to x-axis */
+    }
 
     #permit, #restrict {
       font-weight: bold;
@@ -71,7 +74,7 @@
 
     <!-- Narrow U-shaped parabola with vertex almost touching x-axis -->
     <svg width="400" height="300" viewBox="0 0 400 300">
-      <path id="parabola" d="M 140 50 Q 200 298 260 50" stroke="#00bfff" stroke-width="2" stroke-dasharray="6 6" fill="none"/>
+      <path id="parabola" d="M 140 50 Q 200 299.5 260 50" stroke="#00bfff" stroke-width="2" stroke-dasharray="6 6" fill="none"/>
     </svg>
 
     <!-- Labels along parabola -->
