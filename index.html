@@ -12,11 +12,11 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: center;
     min-height: 100vh;
+    padding-top: 50px; /* spacing for title */
   }
   h1 { font-size: 2.5rem; margin-bottom: 0.2em; }
-  h2 { font-style: italic; margin-bottom: 1em; }
+  h2 { font-style: italic; margin-bottom: 20px; }
 
   .game-container {
     position: relative;
@@ -24,7 +24,6 @@
     height: 300px;
   }
 
-  /* Axes */
   .axis { position: absolute; }
   .x-axis { width: 100%; height: 2px; bottom: 50px; left: 0; background: black; }
   .y-axis { width: 2px; height: 100%; left: 50%; bottom: 50px; transform: translateX(-50%); background: red; }
@@ -38,15 +37,15 @@
   .y-label { top: 10px; left: 52%; color: black; }
 
   .left-label { 
-    bottom: 200px; 
+    bottom: 180px; 
     left: 10px; 
   }
   .right-label { 
-    bottom: 200px; 
+    bottom: 180px; 
     right: 10px; 
   }
 
-  svg { position: absolute; bottom: 50px; }
+  svg { position: absolute; bottom: 50px; width: 100%; height: 250px; }
 
   .answer-boxes {
     display: flex;
@@ -81,10 +80,10 @@
   <span class="label x-label">transverse</span>
   <span class="label y-label">conjugate</span>
 
-  <!-- NEW U-shaped parabola -->
-  <svg width="400" height="250" viewBox="0 0 400 250">
-    <!-- vertex near bottom -->
-    <path d="M 120 180 Q 200 50 280 180" stroke="#00bfff" stroke-width="2" stroke-dasharray="6 6" fill="none"/>
+  <!-- U-shaped parabola opening upward -->
+  <svg viewBox="0 0 400 250">
+    <!-- Vertex at bottom -->
+    <path d="M 80 200 Q 200 50 320 200" stroke="#00bfff" stroke-width="2" stroke-dasharray="6 6" fill="none"/>
   </svg>
 
   <div class="answer-boxes" id="answer-boxes"></div>
