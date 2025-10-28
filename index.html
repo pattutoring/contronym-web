@@ -12,9 +12,10 @@
       display: flex;
       flex-direction: column;
       align-items: center;
-      justify-content: center;
+      justify-content: flex-start;
       min-height: 100vh;
       overflow-x: hidden;
+      padding-top: 20px;
     }
     h1 { font-size: 2.5rem; margin-bottom: 0.2em; }
     h2 { font-style: italic; margin-bottom: 1em; }
@@ -22,7 +23,7 @@
     .game-container {
       position: relative;
       width: 400px;
-      height: 300px;
+      height: 350px;
     }
 
     .axis {
@@ -49,8 +50,8 @@
       font-style: italic;
       font-size: 0.8rem;
     }
-    .left-label { bottom: 100px; left: 20px; }
-    .right-label { bottom: 100px; right: 20px; }
+    .left-label { bottom: 60px; left: 10px; }
+    .right-label { bottom: 60px; right: 10px; }
     .x-label { bottom: 30px; right: 10px; font-style: italic; }
     .y-label { top: 10px; left: 52%; color: black; font-style: italic; }
 
@@ -59,7 +60,7 @@
     .answer-boxes {
       display: flex;
       gap: 5px;
-      margin-top: 270px;
+      margin-top: 300px;
     }
     .letter-box {
       width: 30px; height: 30px;
@@ -94,18 +95,18 @@
     #neutrino {
       position: absolute;
       font-size: 1.5rem;
-      top: 40px;
-      left: 190px;
+      top: -10px;  /* above title */
+      left: 180px;
       user-select: none;
       pointer-events: none;
     }
 
     #trail {
       position: absolute;
-      width: 50px;  /* small loop */
-      height: 50px;
-      top: 20px;
-      left: 180px;
+      width: 30px;
+      height: 20px;
+      top: 0px;
+      left: 185px;
       pointer-events: none;
     }
   </style>
@@ -123,9 +124,9 @@
     <span class="label x-label">transverse</span>
     <span class="label y-label">conjugate</span>
 
-    <!-- U-shaped steep dashed parabola -->
-    <svg width="400" height="200" viewBox="0 0 400 200">
-      <path d="M 180 50 Q 200 200 220 50" stroke="#00bfff" stroke-width="2" stroke-dasharray="6 6" fill="none"/>
+    <!-- Bigger U-shaped dashed parabola -->
+    <svg width="400" height="300" viewBox="0 0 400 300">
+      <path d="M 60 60 Q 200 280 340 60" stroke="#00bfff" stroke-width="2" stroke-dasharray="6 6" fill="none"/>
     </svg>
 
     <!-- Answer boxes -->
@@ -183,15 +184,15 @@
       hintText.style.display = "block";
     });
 
-    // Draw small neutrino loop trail
+    // Draw small neutrino tail loop
     const trailCanvas = document.getElementById("trail");
     const ctx = trailCanvas.getContext("2d");
-    trailCanvas.width = 50;
-    trailCanvas.height = 50;
+    trailCanvas.width = 30;
+    trailCanvas.height = 20;
 
     ctx.beginPath();
     ctx.setLineDash([4, 4]);
-    ctx.arc(25, 25, 15, 0, Math.PI * 2); // small loop
+    ctx.arc(15, 10, 6, Math.PI * 1.2, Math.PI * 2.5); // small loop tail
     ctx.strokeStyle = "#000";
     ctx.lineWidth = 1;
     ctx.stroke();
