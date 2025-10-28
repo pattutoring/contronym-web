@@ -49,8 +49,8 @@
       font-style: italic;
       font-size: 0.8rem;
     }
-    .left-label { bottom: 180px; left: 20px; }
-    .right-label { bottom: 180px; right: 20px; }
+    .left-label { bottom: 100px; left: 20px; }
+    .right-label { bottom: 100px; right: 20px; }
     .x-label { bottom: 30px; right: 10px; font-style: italic; }
     .y-label { top: 10px; left: 52%; color: black; font-style: italic; }
 
@@ -94,16 +94,18 @@
     #neutrino {
       position: absolute;
       font-size: 1.5rem;
-      top: 20px;  /* fixed y above parabola */
-      left: 180px; /* position near center */
+      top: 40px;
+      left: 190px;
       user-select: none;
       pointer-events: none;
     }
 
     #trail {
       position: absolute;
-      width: 400px;
-      height: 300px;
+      width: 50px;  /* small loop */
+      height: 50px;
+      top: 20px;
+      left: 180px;
       pointer-events: none;
     }
   </style>
@@ -121,9 +123,9 @@
     <span class="label x-label">transverse</span>
     <span class="label y-label">conjugate</span>
 
-    <!-- Steeper dashed parabola -->
+    <!-- U-shaped steep dashed parabola -->
     <svg width="400" height="200" viewBox="0 0 400 200">
-      <path d="M 50 50 Q 200 300 350 50" stroke="#00bfff" stroke-width="2" stroke-dasharray="6 6" fill="none"/>
+      <path d="M 180 50 Q 200 200 220 50" stroke="#00bfff" stroke-width="2" stroke-dasharray="6 6" fill="none"/>
     </svg>
 
     <!-- Answer boxes -->
@@ -181,17 +183,15 @@
       hintText.style.display = "block";
     });
 
-    // Draw static neutrino path
+    // Draw small neutrino loop trail
     const trailCanvas = document.getElementById("trail");
     const ctx = trailCanvas.getContext("2d");
-    trailCanvas.width = 400;
-    trailCanvas.height = 300;
+    trailCanvas.width = 50;
+    trailCanvas.height = 50;
 
     ctx.beginPath();
-    ctx.setLineDash([5, 5]);
-    // example trail path above parabola
-    ctx.moveTo(50, 30);
-    ctx.quadraticCurveTo(200, 0, 350, 30);
+    ctx.setLineDash([4, 4]);
+    ctx.arc(25, 25, 15, 0, Math.PI * 2); // small loop
     ctx.strokeStyle = "#000";
     ctx.lineWidth = 1;
     ctx.stroke();
