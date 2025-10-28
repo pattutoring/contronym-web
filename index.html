@@ -69,9 +69,9 @@
     <span class="label x-label">transverse</span>
     <span class="label y-label">conjugate</span>
 
-    <!-- U-shaped parabola opening upward -->
+    <!-- Narrow U-shaped parabola opening upward -->
     <svg width="400" height="300" viewBox="0 0 400 300">
-      <path id="parabola" d="M 60 50 Q 200 250 340 50" stroke="#00bfff" stroke-width="2" stroke-dasharray="6 6" fill="none"/>
+      <path id="parabola" d="M 140 50 Q 200 250 260 50" stroke="#00bfff" stroke-width="2" stroke-dasharray="6 6" fill="none"/>
     </svg>
 
     <!-- Labels along parabola -->
@@ -86,14 +86,14 @@
 
     const pathLength = path.getTotalLength();
 
-    // Start point for 'permit'
+    // Start point for 'permit' (move slightly left outside the parabola)
     const startPoint = path.getPointAtLength(0);
-    permit.style.left = `${startPoint.x - permit.offsetWidth/2}px`;
+    permit.style.left = `${startPoint.x - permit.offsetWidth - 5}px`;
     permit.style.bottom = `${300 - startPoint.y + 50}px`;
 
-    // End point for 'restrict'
+    // End point for 'restrict' (move slightly right outside the parabola)
     const endPoint = path.getPointAtLength(pathLength);
-    restrict.style.left = `${endPoint.x - restrict.offsetWidth/2}px`;
+    restrict.style.left = `${endPoint.x + 5}px`;
     restrict.style.bottom = `${300 - endPoint.y + 50}px`;
   </script>
 </body>
