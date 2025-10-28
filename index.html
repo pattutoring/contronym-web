@@ -3,20 +3,19 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Contronym: The Majorana of Meaning</title>
+<title>Contronym Game</title>
 <style>
   body {
     font-family: system-ui, sans-serif;
     background-color: #f9f7f2;
-    color: #333;
     display: flex;
     flex-direction: column;
     align-items: center;
-    min-height: 100vh;
-    padding-top: 50px; /* spacing for title */
+    padding-top: 40px;
   }
-  h1 { font-size: 2.5rem; margin-bottom: 0.2em; }
-  h2 { font-style: italic; margin-bottom: 20px; }
+
+  h1 { font-size: 2.5rem; margin: 0; }
+  h2 { font-style: italic; margin: 5px 0 20px 0; }
 
   .game-container {
     position: relative;
@@ -24,46 +23,27 @@
     height: 300px;
   }
 
+  /* Axes */
   .axis { position: absolute; }
-  .x-axis { width: 100%; height: 2px; bottom: 50px; left: 0; background: black; }
+  .x-axis { width: 100%; height: 2px; bottom: 50px; background: black; }
   .y-axis { width: 2px; height: 100%; left: 50%; bottom: 50px; transform: translateX(-50%); background: red; }
 
-  .label {
-    position: absolute;
-    font-style: italic;
-    font-size: 0.8rem;
-  }
+  /* Labels */
+  .label { position: absolute; font-style: italic; font-size: 0.8rem; }
   .x-label { bottom: 30px; right: 10px; }
   .y-label { top: 10px; left: 52%; color: black; }
 
-  .left-label { 
-    bottom: 180px; 
-    left: 10px; 
-  }
-  .right-label { 
-    bottom: 180px; 
-    right: 10px; 
-  }
+  .left-label { }
+  .right-label { }
 
-  svg { position: absolute; bottom: 50px; width: 100%; height: 250px; }
-
-  .answer-boxes {
-    display: flex;
-    gap: 5px;
-    margin-top: 270px;
-  }
-  .letter-box {
-    width: 30px; height: 30px;
-    border: 1px solid #333;
-    display: flex; justify-content: center; align-items: center;
-    font-family: monospace; font-size: 1rem;
-    background-color: white;
-    text-align: center;
-  }
+  /* Answer boxes */
+  .answer-boxes { display: flex; gap: 5px; margin-top: 270px; }
+  .letter-box { width: 30px; height: 30px; border: 1px solid #333; text-align: center; font-family: monospace; font-size: 1rem; }
 
   #hint-text { font-size: 0.75rem; font-style: italic; color: #666; margin-top: 10px; display: none; }
   #message { font-size: 0.9rem; color: #008080; margin-top: 10px; font-style: italic; }
   button { margin-top: 10px; padding: 5px 10px; }
+
 </style>
 </head>
 <body>
@@ -75,15 +55,14 @@
   <div class="axis x-axis"></div>
   <div class="axis y-axis"></div>
 
-  <span class="label left-label" id="left-label">permit</span>
-  <span class="label right-label" id="right-label">restrict</span>
   <span class="label x-label">transverse</span>
   <span class="label y-label">conjugate</span>
 
-  <!-- U-shaped parabola opening upward -->
-  <svg viewBox="0 0 400 250">
-    <!-- Vertex at bottom -->
-    <path d="M 80 200 Q 200 50 320 200" stroke="#00bfff" stroke-width="2" stroke-dasharray="6 6" fill="none"/>
+  <svg viewBox="0 0 400 250" width="400" height="250">
+    <!-- Parabola U-shape opening up -->
+    <path id="parabola" d="M 50 200 Q 200 50 350 200" stroke="#00bfff" stroke-width="2" stroke-dasharray="6 6" fill="none"/>
+    <text x="45" y="50" font-size="14" font-style="italic">permit</text>
+    <text x="325" y="50" font-size="14" font-style="italic">restrict</text>
   </svg>
 
   <div class="answer-boxes" id="answer-boxes"></div>
