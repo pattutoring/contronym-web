@@ -50,8 +50,8 @@
       font-style: italic;
       font-size: 0.8rem;
     }
-    .left-label { bottom: 60px; left: 10px; }
-    .right-label { bottom: 60px; right: 10px; }
+    .left-label { bottom: 200px; left: 10px; }   /* higher */
+    .right-label { bottom: 200px; right: 10px; } /* higher */
     .x-label { bottom: 30px; right: 10px; font-style: italic; }
     .y-label { top: 10px; left: 52%; color: black; font-style: italic; }
 
@@ -91,23 +91,25 @@
       padding: 5px 10px;
     }
 
-    /* Neutrino symbol */
-    #neutrino {
+    /* Neutrino symbol and trail */
+    #neutrino-container {
       position: absolute;
-      font-size: 1.5rem;
-      top: -10px;  /* above title */
+      top: -40px;  /* above title */
       left: 180px;
-      user-select: none;
+      width: 40px;
+      height: 40px;
       pointer-events: none;
     }
 
-    #trail {
+    #neutrino { 
       position: absolute;
-      width: 30px;
-      height: 20px;
-      top: 0px;
-      left: 185px;
-      pointer-events: none;
+      font-size: 1.5rem;
+    }
+
+    #trail { 
+      position: absolute; 
+      width: 40px; 
+      height: 40px; 
     }
   </style>
 </head>
@@ -124,17 +126,19 @@
     <span class="label x-label">transverse</span>
     <span class="label y-label">conjugate</span>
 
-    <!-- Bigger U-shaped dashed parabola -->
+    <!-- Steep U-shaped parabola, vertex almost touches x-axis -->
     <svg width="400" height="300" viewBox="0 0 400 300">
-      <path d="M 60 60 Q 200 280 340 60" stroke="#00bfff" stroke-width="2" stroke-dasharray="6 6" fill="none"/>
+      <path d="M 60 220 Q 200 50 340 220" stroke="#00bfff" stroke-width="2" stroke-dasharray="6 6" fill="none"/>
     </svg>
 
     <!-- Answer boxes -->
     <div class="answer-boxes" id="answer-boxes"></div>
 
-    <!-- Neutrino trail -->
-    <canvas id="trail"></canvas>
-    <div id="neutrino">ν</div>
+    <!-- Neutrino symbol + trail -->
+    <div id="neutrino-container">
+      <canvas id="trail"></canvas>
+      <div id="neutrino">ν</div>
+    </div>
   </div>
 
   <button id="show-hint">Show Hint</button>
@@ -184,15 +188,15 @@
       hintText.style.display = "block";
     });
 
-    // Draw small neutrino tail loop
+    // Draw small circular neutrino trail with a tail
     const trailCanvas = document.getElementById("trail");
     const ctx = trailCanvas.getContext("2d");
-    trailCanvas.width = 30;
-    trailCanvas.height = 20;
+    trailCanvas.width = 40;
+    trailCanvas.height = 40;
 
     ctx.beginPath();
     ctx.setLineDash([4, 4]);
-    ctx.arc(15, 10, 6, Math.PI * 1.2, Math.PI * 2.5); // small loop tail
+    ctx.arc(20, 20, 10, 0, Math.PI * 1.8); // partial circle for tail
     ctx.strokeStyle = "#000";
     ctx.lineWidth = 1;
     ctx.stroke();
