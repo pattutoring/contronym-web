@@ -1,164 +1,137 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Contronym: The Majorana of Meaning</title>
-  <style>
-    body {
-      font-family: system-ui, sans-serif;
-      background-color: #f9f7f2;
-      color: #333;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      min-height: 100vh;
-    }
-    h1 { font-size: 2.5rem; margin-bottom: 0.2em; }
-    h2 { font-style: italic; margin-bottom: 1em; }
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Contronym: The Majorana of Meaning</title>
+<style>
+  body {
+    font-family: system-ui, sans-serif;
+    background-color: #f9f7f2;
+    color: #333;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+  }
+  h1 { font-size: 2.5rem; margin-bottom: 0.2em; }
+  h2 { font-style: italic; margin-bottom: 1em; }
 
-    .game-container {
-      position: relative;
-      width: 400px;
-      height: 300px;
-    }
+  .game-container {
+    position: relative;
+    width: 400px;
+    height: 300px;
+  }
 
-    .axis {
-      position: absolute;
-    }
-    .x-axis {
-      width: 100%;
-      height: 2px;
-      bottom: 50px;
-      left: 0;
-      background: black;
-    }
-    .y-axis {
-      width: 2px;
-      height: 100%;
-      left: 50%;
-      bottom: 0;
-      transform: translateX(-50%);
-      background: red;
-    }
+  /* Axes */
+  .axis { position: absolute; }
+  .x-axis { width: 100%; height: 2px; bottom: 50px; left: 0; background: black; }
+  .y-axis { width: 2px; height: 100%; left: 50%; bottom: 50px; transform: translateX(-50%); background: red; }
 
-    .label {
-      position: absolute;
-      font-style: italic;
-      font-size: 0.8rem;
-    }
-    .left-label { bottom: 180px; left: 10px; }   /* left side of parabola */
-    .right-label { bottom: 180px; right: 10px; } /* right side of parabola */
-    .x-label { bottom: 30px; right: 10px; font-style: italic; }
-    .y-label { top: 10px; left: 52%; color: black; font-style: italic; }
+  .label {
+    position: absolute;
+    font-style: italic;
+    font-size: 0.8rem;
+  }
+  .x-label { bottom: 30px; right: 10px; }
+  .y-label { top: 10px; left: 52%; color: black; }
 
-    svg { position: absolute; bottom: 50px; }
+  .left-label { 
+    bottom: 200px; 
+    left: 10px; 
+  }
+  .right-label { 
+    bottom: 200px; 
+    right: 10px; 
+  }
 
-    .answer-boxes {
-      display: flex;
-      gap: 5px;
-      margin-top: 270px; /* align at bottom of graph */
-    }
-    .letter-box {
-      width: 30px; height: 30px;
-      border: 1px solid #333;
-      display: flex; justify-content: center; align-items: center;
-      font-family: monospace; font-size: 1rem;
-      background-color: white;
-      text-align: center;
-    }
+  svg { position: absolute; bottom: 50px; }
 
-    #hint-text {
-      font-size: 0.75rem;
-      font-style: italic;
-      color: #666;
-      margin-top: 10px;
-      display: none;
-    }
+  .answer-boxes {
+    display: flex;
+    gap: 5px;
+    margin-top: 270px;
+  }
+  .letter-box {
+    width: 30px; height: 30px;
+    border: 1px solid #333;
+    display: flex; justify-content: center; align-items: center;
+    font-family: monospace; font-size: 1rem;
+    background-color: white;
+    text-align: center;
+  }
 
-    #message {
-      font-size: 0.9rem;
-      color: #008080;
-      margin-top: 10px;
-      font-style: italic;
-    }
-
-    button {
-      margin-top: 10px;
-      padding: 5px 10px;
-    }
-  </style>
+  #hint-text { font-size: 0.75rem; font-style: italic; color: #666; margin-top: 10px; display: none; }
+  #message { font-size: 0.9rem; color: #008080; margin-top: 10px; font-style: italic; }
+  button { margin-top: 10px; padding: 5px 10px; }
+</style>
 </head>
 <body>
-  <h1>Contronym</h1>
-  <h2>The Majorana of Meaning</h2>
 
-  <div class="game-container">
-    <div class="axis x-axis"></div>
-    <div class="axis y-axis"></div>
+<h1>Contronym</h1>
+<h2>The Majorana of Meaning</h2>
 
-    <span class="label left-label" id="left-label">permit</span>
-    <span class="label right-label" id="right-label">restrict</span>
-    <span class="label x-label">transverse</span>
-    <span class="label y-label">conjugate</span>
+<div class="game-container">
+  <div class="axis x-axis"></div>
+  <div class="axis y-axis"></div>
 
-    <!-- Centered steep dashed parabola -->
-    <svg width="400" height="300" viewBox="0 0 400 300">
-      <path d="M 140 100 Q 200 150 260 100" stroke="#00bfff" stroke-width="2" stroke-dasharray="6 6" fill="none"/>
-    </svg>
+  <span class="label left-label" id="left-label">permit</span>
+  <span class="label right-label" id="right-label">restrict</span>
+  <span class="label x-label">transverse</span>
+  <span class="label y-label">conjugate</span>
 
-    <!-- Answer boxes -->
-    <div class="answer-boxes" id="answer-boxes"></div>
-  </div>
+  <!-- NEW U-shaped parabola -->
+  <svg width="400" height="250" viewBox="0 0 400 250">
+    <!-- vertex near bottom -->
+    <path d="M 120 180 Q 200 50 280 180" stroke="#00bfff" stroke-width="2" stroke-dasharray="6 6" fill="none"/>
+  </svg>
 
-  <button id="show-hint">Show Hint</button>
-  <p id="hint-text">A word that both authorizes and penalizes an action.</p>
-  <p id="message"></p>
+  <div class="answer-boxes" id="answer-boxes"></div>
+</div>
 
-  <script>
-    const word = "SANCTION";
-    const answerBoxes = document.getElementById("answer-boxes");
-    const hintText = document.getElementById("hint-text");
-    const showHintBtn = document.getElementById("show-hint");
-    const message = document.getElementById("message");
+<button id="show-hint">Show Hint</button>
+<p id="hint-text">A word that both authorizes and penalizes an action.</p>
+<p id="message"></p>
 
-    // Create input boxes
-    for (let i = 0; i < word.length; i++) {
-      const box = document.createElement("input");
-      box.type = "text";
-      box.maxLength = 1;
-      box.className = "letter-box";
-      box.dataset.index = i;
-      answerBoxes.appendChild(box);
-    }
+<script>
+const word = "SANCTION";
+const answerBoxes = document.getElementById("answer-boxes");
+const hintText = document.getElementById("hint-text");
+const showHintBtn = document.getElementById("show-hint");
+const message = document.getElementById("message");
 
-    // Move focus automatically and check answer
-    answerBoxes.addEventListener("input", (e) => {
-      const target = e.target;
-      const index = parseInt(target.dataset.index);
-      target.value = target.value.toUpperCase();
+// Create input boxes
+for (let i = 0; i < word.length; i++) {
+  const box = document.createElement("input");
+  box.type = "text";
+  box.maxLength = 1;
+  box.className = "letter-box";
+  box.dataset.index = i;
+  answerBoxes.appendChild(box);
+}
 
-      // Move focus to next box
-      if (target.value.length === 1) {
-        const next = answerBoxes.children[index + 1];
-        if (next) next.focus();
-      }
+// Move focus automatically and check answer
+answerBoxes.addEventListener("input", (e) => {
+  const target = e.target;
+  const index = parseInt(target.dataset.index);
+  target.value = target.value.toUpperCase();
 
-      // Check if full word is correct
-      let current = '';
-      for (let box of answerBoxes.children) {
-        current += box.value;
-      }
-      if (current === word) {
-        message.textContent = "You’ve found the correct inversion of the neutrino — it is its own antineutrino!";
-      }
-    });
+  if (target.value.length === 1) {
+    const next = answerBoxes.children[index + 1];
+    if (next) next.focus();
+  }
 
-    // Show hint
-    showHintBtn.addEventListener("click", () => {
-      hintText.style.display = "block";
-    });
-  </script>
+  let current = '';
+  for (let box of answerBoxes.children) { current += box.value; }
+  if (current === word) {
+    message.textContent = "You’ve found the correct inversion of the neutrino — it is its own antineutrino!";
+  }
+});
+
+// Show hint
+showHintBtn.addEventListener("click", () => { hintText.style.display = "block"; });
+</script>
+
 </body>
 </html>
