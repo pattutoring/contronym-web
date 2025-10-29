@@ -1,233 +1,111 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Contronym: The Majorana of Meaning</title>
-  <style>
-    body {
-      font-family: system-ui, sans-serif;
-      background-color: #f9f7f2;
-      color: #333;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: flex-start;
-      min-height: 100vh;
-      padding-top: 40px;
+import React, { useState } from "react";
+
+export default function ContronymGame() {
+  const [input, setInput] = useState("");
+  const [showHint, setShowHint] = useState(false);
+  const [message, setMessage] = useState("");
+
+  // Editable words and hint
+  const correctAnswer = "evolve";
+  const leftWord = "permit";
+  const rightWord = "restrict";
+  const hintText = "Think of a word that means both to progress and to change.";
+
+  const handleSubmit = () => {
+    if (input.trim().toLowerCase() === correctAnswer.toLowerCase()) {
+      setMessage(
+        "Brilliant! You’ve found the correct inversion — the neutrino and its antineutrino unify through semantic symmetry!"
+      );
+    } else {
+      setMessage("Not quite — try again!");
     }
+  };
 
-    h1 {
-      font-size: 2.4rem;
-      margin-bottom: 0.2em;
-      position: relative;
-      display: inline-block;
-    }
+  return (
+    <div className="flex flex-col items-center text-center p-6">
+      <h1 className="text-3xl font-bold mb-4">Contronym Collider</h1>
 
-    h2 { 
-      font-style: italic; 
-      margin-bottom: 1.5em; 
-    }
+      <div className="relative w-full max-w-lg h-[300px]">
+        <svg viewBox="0 0 400 300" className="w-full h-full">
+          {/* Axes */}
+          <line x1="0" y1="250" x2="400" y2="250" stroke="black" strokeWidth="2" />
+          <text x="360" y="270" fontStyle="italic" fill="black">
+            transverse
+          </text>
 
-    .game-container {
-      position: relative;
-      width: 400px;
-      height: 380px;
-      margin-bottom: 60px;
-    }
+          <line x1="200" y1="0" x2="200" y2="300" stroke="red" strokeWidth="2" />
+          <text x="210" y="20" fontStyle="italic" fill="black">
+            conjugate
+          </text>
 
-    .axis {
-      position: absolute;
-      background: #000;
-    }
+          {/* Parabola (U-shaped, narrow, low vertex) */}
+          <path
+            d="M 50 100 Q 200 260 350 100"
+            fill="none"
+            stroke="lightblue"
+            strokeDasharray="6,6"
+            strokeWidth="2"
+          />
 
-    .x-axis {
-      width: 100%;
-      height: 2px;
-      bottom: 40px;
-      left: 0;
-    }
+          {/* Words along sides */}
+          <text x="80" y="80" fill="black" fontWeight="bold">
+            {leftWord}
+          </text>
+          <text x="295" y="80" fill="black" fontWeight="bold">
+            {rightWord}
+          </text>
+        </svg>
+      </div>
 
-    .y-axis {
-      width: 2px;
-      height: 100%;
-      left: 50%;
-      bottom: 0;
-      transform: translateX(-50%);
-      background: red;
-    }
+      {/* Answer input */}
+      <div className="mt-4">
+        <input
+          type="text"
+          placeholder="Type your answer..."
+          value={input}
+          onChange={(e) => setInput(e.target.value)}
+          className="border border-gray-400 rounded px-3 py-2 mr-2"
+        />
+        <button
+          onClick={handleSubmit}
+          className="bg-blue-500 text-white px-4 py-2 rounded"
+        >
+          Submit
+        </button>
+      </div>
 
-    .label {
-      position: absolute;
-      font-style: italic;
-      font-size: 0.8rem;
-    }
+      {/* Show Hint Button */}
+      <div className="mt-4">
+        <button
+          onClick={() => setShowHint(!showHint)}
+          className="bg-gray-200 px-3 py-2 rounded"
+        >
+          {showHint ? "Hide Hint" : "Show Hint"}
+        </button>
+        {showHint && (
+          <p className="mt-2 text-gray-700 italic">{hintText}</p>
+        )}
+      </div>
 
-    .left-label { bottom: 240px; left: 20px; }
-    .right-label { bottom: 240px; right: 20px; }
-    .x-label { bottom: 20px; right: 10px; font-style: italic; }
-    .y-label { top: 10px; left: 52%; font-style: italic; }
+      {/* Neutrino Symbol with dashed trail below hint */}
+      <div className="mt-6 relative">
+        <svg width="80" height="80" className="mx-auto">
+          {/* Dashed cartoon loop */}
+          <path
+            d="M40 40 q10 -20 20 0 q-10 20 -20 0 z"
+            fill="none"
+            stroke="black"
+            strokeDasharray="4,4"
+          />
+          {/* Neutrino symbol */}
+          <text x="36" y="45" fontSize="20" fontWeight="bold" fill="black">
+            ν
+          </text>
+        </svg>
+      </div>
 
-    svg {
-      position: absolute;
-      bottom: 40px;
-      left: 0;
-    }
-
-    /* Neutrino trail positioned near the graph */
-    .neutrino-path {
-      position: absolute;
-      bottom: 100px; /* closer to graph */
-      left: 80px;
-      pointer-events: none;
-    }
-
-    .answer-boxes {
-      display: flex;
-      gap: 5px;
-      justify-content: center;
-      margin-top: 10px;
-    }
-
-    .letter-box {
-      width: 30px;
-      height: 30px;
-      border: 1px solid #333;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      font-family: monospace;
-      font-size: 1rem;
-      background-color: white;
-      text-align: center;
-    }
-
-    #hint-text {
-      font-size: 0.8rem;
-      font-style: italic;
-      color: #666;
-      margin-top: 10px;
-      display: none;
-      text-align: center;
-    }
-
-    #message {
-      font-size: 0.9rem;
-      color: #008080;
-      margin-top: 10px;
-      font-style: italic;
-      text-align: center;
-    }
-
-    button {
-      margin-top: 10px;
-      padding: 5px 10px;
-      font-size: 0.9rem;
-    }
-  </style>
-</head>
-<body>
-  <h1>Contronym</h1>
-  <h2>The Majorana of Meaning</h2>
-
-  <div class="game-container">
-    <div class="axis x-axis"></div>
-    <div class="axis y-axis"></div>
-
-    <span class="label left-label" id="left-label">permit</span>
-    <span class="label right-label" id="right-label">restrict</span>
-    <span class="label x-label">transverse</span>
-    <span class="label y-label">conjugate</span>
-
-    <!-- Parabola: steeper, narrow, vertex lower -->
-    <svg width="400" height="340" viewBox="0 0 400 340">
-      <path d="M 120 60 Q 200 310 280 60"
-            stroke="#00bfff"
-            stroke-width="2"
-            stroke-dasharray="6 6"
-            fill="none" />
-    </svg>
-
-    <!-- Neutrino flight path -->
-    <div class="neutrino-path">
-      <svg width="240" height="100" viewBox="0 0 240 100">
-        <!-- “bee-flight” wavy dashed path -->
-        <path d="M 10 60 
-                 C 40 20, 80 100, 120 60 
-                 S 200 0, 230 60"
-              stroke="#888"
-              stroke-width="2"
-              stroke-dasharray="5 5"
-              fill="none" />
-        <!-- Neutrino symbol (ν) -->
-        <text x="225" y="65" font-size="20" font-style="italic" font-family="serif" fill="#333">ν</text>
-      </svg>
+      {/* Message */}
+      <p className="mt-4 text-lg text-blue-600">{message}</p>
     </div>
-  </div>
-
-  <!-- Answer boxes below the graph -->
-  <div class="answer-boxes" id="answer-boxes"></div>
-
-  <button id="show-hint">Show Hint</button>
-  <p id="hint-text"></p>
-  <p id="message"></p>
-
-  <script>
-    // === Editable weekly variables ===
-    const word = "SANCTION";                   // your answer word
-    const leftWord = "permit";                 // left label
-    const rightWord = "restrict";              // right label
-    const hintMessage = "A word that both authorizes and penalizes an action.";  // hint
-
-    // === Apply dynamic labels ===
-    document.getElementById("left-label").textContent = leftWord;
-    document.getElementById("right-label").textContent = rightWord;
-    document.getElementById("hint-text").textContent = hintMessage;
-
-    const answerBoxes = document.getElementById("answer-boxes");
-    const hintText = document.getElementById("hint-text");
-    const showHintBtn = document.getElementById("show-hint");
-    const message = document.getElementById("message");
-
-    // Create input boxes
-    for (let i = 0; i < word.length; i++) {
-      const box = document.createElement("input");
-      box.type = "text";
-      box.maxLength = 1;
-      box.className = "letter-box";
-      box.dataset.index = i;
-      answerBoxes.appendChild(box);
-    }
-
-    // Move focus automatically
-    answerBoxes.addEventListener("input", (e) => {
-      const target = e.target;
-      const index = parseInt(target.dataset.index);
-      target.value = target.value.toUpperCase();
-
-      // Move focus to next box
-      if (target.value.length === 1) {
-        const next = answerBoxes.children[index + 1];
-        if (next) next.focus();
-      }
-
-      // Check full word
-      let current = '';
-      for (let box of answerBoxes.children) {
-        current += box.value;
-      }
-      if (current === word) {
-        message.textContent =
-          "You’ve found the correct inversion of the neutrino — it is its own antineutrino!";
-      } else {
-        message.textContent = "";
-      }
-    });
-
-    // Show hint
-    showHintBtn.addEventListener("click", () => {
-      hintText.style.display = "block";
-    });
-  </script>
-</body>
-</html>
+  );
+}
