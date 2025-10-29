@@ -16,6 +16,7 @@
       min-height: 100vh;
       padding-top: 40px;
     }
+
     h1 { font-size: 2.4rem; margin-bottom: 0.2em; }
     h2 { font-style: italic; margin-bottom: 1.5em; }
 
@@ -23,6 +24,7 @@
       position: relative;
       width: 400px;
       height: 350px;
+      margin-bottom: 50px;
     }
 
     .axis {
@@ -49,8 +51,8 @@
       font-style: italic;
       font-size: 0.8rem;
     }
-    .left-label { bottom: 210px; left: 20px; }
-    .right-label { bottom: 210px; right: 20px; }
+    .left-label { bottom: 230px; left: 20px; }
+    .right-label { bottom: 230px; right: 20px; }
     .x-label { bottom: 20px; right: 10px; font-style: italic; }
     .y-label { top: 10px; left: 52%; font-style: italic; }
 
@@ -63,7 +65,8 @@
     .answer-boxes {
       display: flex;
       gap: 5px;
-      margin-top: 270px;
+      justify-content: center;
+      margin-top: 10px;
     }
     .letter-box {
       width: 30px;
@@ -84,6 +87,7 @@
       color: #666;
       margin-top: 10px;
       display: none;
+      text-align: center;
     }
 
     #message {
@@ -91,6 +95,7 @@
       color: #008080;
       margin-top: 10px;
       font-style: italic;
+      text-align: center;
     }
 
     button {
@@ -113,16 +118,18 @@
     <span class="label x-label">transverse</span>
     <span class="label y-label">conjugate</span>
 
-    <!-- Parabola (U-shaped, vertex lower) -->
+    <!-- Parabola (U-shaped, steeper, vertex low near x-axis) -->
     <svg width="400" height="300" viewBox="0 0 400 300">
-      <path d="M 50 200 Q 200 290 350 200" 
-            stroke="#00bfff" stroke-width="2" 
-            stroke-dasharray="6 6" fill="none" />
+      <path d="M 50 100 Q 200 280 350 100"
+            stroke="#00bfff"
+            stroke-width="2"
+            stroke-dasharray="6 6"
+            fill="none" />
     </svg>
-
-    <!-- Answer boxes -->
-    <div class="answer-boxes" id="answer-boxes"></div>
   </div>
+
+  <!-- Answer boxes below the graph -->
+  <div class="answer-boxes" id="answer-boxes"></div>
 
   <button id="show-hint">Show Hint</button>
   <p id="hint-text"></p>
@@ -173,7 +180,7 @@
         current += box.value;
       }
       if (current === word) {
-        message.textContent = 
+        message.textContent =
           "You’ve found the correct inversion of the neutrino — it is its own antineutrino!";
       } else {
         message.textContent = "";
