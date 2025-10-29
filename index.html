@@ -1,196 +1,107 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Contronym: The Majorana of Meaning</title>
-  <style>
-    body {
-      font-family: system-ui, sans-serif;
-      background-color: #f9f7f2;
-      color: #333;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: flex-start;
-      min-height: 100vh;
-      padding-top: 40px;
-    }
-
-    h1 { font-size: 2.4rem; margin-bottom: 0.2em; }
-    h2 { font-style: italic; margin-bottom: 1.5em; }
-
-    .game-container {
-      position: relative;
-      width: 400px;
-      height: 380px;
-      margin-bottom: 50px;
-    }
-
-    .axis {
-      position: absolute;
-      background: #000;
-    }
-    .x-axis {
-      width: 100%;
-      height: 2px;
-      bottom: 40px;
-      left: 0;
-    }
-    .y-axis {
-      width: 2px;
-      height: 100%;
-      left: 50%;
-      bottom: 0;
-      transform: translateX(-50%);
-      background: red;
-    }
-
-    .label {
-      position: absolute;
-      font-style: italic;
-      font-size: 0.8rem;
-    }
-    .left-label { bottom: 240px; left: 20px; }
-    .right-label { bottom: 240px; right: 20px; }
-    .x-label { bottom: 20px; right: 10px; font-style: italic; }
-    .y-label { top: 10px; left: 52%; font-style: italic; }
-
-    svg {
-      position: absolute;
-      bottom: 40px;
-      left: 0;
-    }
-
-    .answer-boxes {
-      display: flex;
-      gap: 5px;
-      justify-content: center;
-      margin-top: 10px;
-    }
-    .letter-box {
-      width: 30px;
-      height: 30px;
-      border: 1px solid #333;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      font-family: monospace;
-      font-size: 1rem;
-      background-color: white;
-      text-align: center;
-    }
-
-    #hint-text {
-      font-size: 0.8rem;
-      font-style: italic;
-      color: #666;
-      margin-top: 10px;
-      display: none;
-      text-align: center;
-    }
-
-    #message {
-      font-size: 0.9rem;
-      color: #008080;
-      margin-top: 10px;
-      font-style: italic;
-      text-align: center;
-    }
-
-    button {
-      margin-top: 10px;
-      padding: 5px 10px;
-      font-size: 0.9rem;
-    }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Contronym Parabola Puzzle</title>
+<style>
+  body {
+    font-family: Arial, sans-serif;
+    text-align: center;
+    background: #f8f9fa;
+  }
+  h2 {
+    margin-top: 20px;
+  }
+  svg {
+    margin-top: 10px;
+  }
+  .letter-boxes {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    margin-top: 25px;
+  }
+  .letter-box {
+    border: 2px solid black;
+    width: 40px;
+    height: 40px;
+    font-size: 1.5em;
+    text-transform: uppercase;
+    text-align: center;
+  }
+  button {
+    margin-top: 15px;
+    padding: 10px 20px;
+  }
+</style>
 </head>
 <body>
-  <h1>Contronym</h1>
-  <h2>The Majorana of Meaning</h2>
 
-  <div class="game-container">
-    <div class="axis x-axis"></div>
-    <div class="axis y-axis"></div>
+<h2 id="contronymTitle">Contronym: PERMIT</h2>
 
-    <span class="label left-label" id="left-label">permit</span>
-    <span class="label right-label" id="right-label">restrict</span>
-    <span class="label x-label">transverse</span>
-    <span class="label y-label">conjugate</span>
+<svg width="400" height="300" style="border:1px solid #ccc;">
+  <!-- Axes -->
+  <line x1="50" y1="250" x2="350" y2="250" stroke="black" stroke-width="2" /> <!-- x-axis -->
+  <line x1="200" y1="270" x2="200" y2="30" stroke="black" stroke-width="2" /> <!-- y-axis -->
+  <text x="355" y="255" font-size="12">Transverse</text>
+  <text x="205" y="40" font-size="12">Conjugate</text>
 
-    <!-- Parabola: steeper, narrow, vertex lower -->
-    <svg width="400" height="340" viewBox="0 0 400 340">
-      <path d="M 120 60 Q 200 310 280 60"
-            stroke="#00bfff"
-            stroke-width="2"
-            stroke-dasharray="6 6"
-            fill="none" />
-    </svg>
-  </div>
+  <!-- Parabola (function y = a(x - h)^2 + k) -->
+  <path id="parabola" d="" stroke="blue" stroke-dasharray="5,5" stroke-width="2" fill="none" />
 
-  <!-- Answer boxes below the graph -->
-  <div class="answer-boxes" id="answer-boxes"></div>
+  <!-- Side words -->
+  <text id="wordLeft" x="70" y="100" font-size="16" font-weight="bold" text-anchor="middle">Permit</text>
+  <text id="wordRight" x="330" y="100" font-size="16" font-weight="bold" text-anchor="middle">Restrict</text>
 
-  <button id="show-hint">Show Hint</button>
-  <p id="hint-text"></p>
-  <p id="message"></p>
+  <!-- Neutrino trail -->
+  <circle cx="200" cy="60" r="6" fill="gray" />
+  <path d="M195 70 Q200 90 205 70" stroke="gray" stroke-width="2" fill="none" />
+</svg>
 
-  <script>
-    // === Editable weekly variables ===
-    const word = "SANCTION";                   // your answer word
-    const leftWord = "permit";                 // left label
-    const rightWord = "restrict";              // right label
-    const hintMessage = "A word that both authorizes and penalizes an action.";  // hint
+<div class="letter-boxes" id="letterBoxes"></div>
 
-    // === Apply dynamic labels ===
-    document.getElementById("left-label").textContent = leftWord;
-    document.getElementById("right-label").textContent = rightWord;
-    document.getElementById("hint-text").textContent = hintMessage;
+<button onclick="showHint()">Show Hint</button>
+<p id="hint" style="display:none; font-style:italic;">To ‘permit’ can also mean to ‘restrain’.</p>
 
-    const answerBoxes = document.getElementById("answer-boxes");
-    const hintText = document.getElementById("hint-text");
-    const showHintBtn = document.getElementById("show-hint");
-    const message = document.getElementById("message");
+<script>
+  // Parameters for parabola
+  const a = 0.015; // Steepness
+  const h = 200;   // x vertex (center)
+  const k = 230;   // y vertex (lower = down)
 
-    // Create input boxes
-    for (let i = 0; i < word.length; i++) {
-      const box = document.createElement("input");
-      box.type = "text";
-      box.maxLength = 1;
-      box.className = "letter-box";
-      box.dataset.index = i;
-      answerBoxes.appendChild(box);
-    }
+  // Generate parabola path
+  let pathData = "";
+  for (let x = 50; x <= 350; x += 1) {
+    let y = a * Math.pow(x - h, 2) + k;
+    pathData += (x === 50 ? "M" : "L") + x + " " + y + " ";
+  }
+  document.getElementById("parabola").setAttribute("d", pathData);
 
-    // Move focus automatically
-    answerBoxes.addEventListener("input", (e) => {
-      const target = e.target;
-      const index = parseInt(target.dataset.index);
-      target.value = target.value.toUpperCase();
+  // === Editable Text ===
+  const contronym = "Permit";
+  const leftWord = "Allow";
+  const rightWord = "Restrict";
+  const hintText = "To ‘permit’ can also mean to ‘restrain’.";
 
-      // Move focus to next box
-      if (target.value.length === 1) {
-        const next = answerBoxes.children[index + 1];
-        if (next) next.focus();
-      }
+  document.getElementById("contronymTitle").textContent = `Contronym: ${contronym}`;
+  document.getElementById("wordLeft").textContent = leftWord;
+  document.getElementById("wordRight").textContent = rightWord;
+  document.getElementById("hint").textContent = hintText;
 
-      // Check full word
-      let current = '';
-      for (let box of answerBoxes.children) {
-        current += box.value;
-      }
-      if (current === word) {
-        message.textContent =
-          "You’ve found the correct inversion of the neutrino — it is its own antineutrino!";
-      } else {
-        message.textContent = "";
-      }
-    });
+  // Generate letter boxes based on contronym length
+  const container = document.getElementById("letterBoxes");
+  for (let i = 0; i < contronym.length; i++) {
+    const box = document.createElement("input");
+    box.className = "letter-box";
+    box.maxLength = 1;
+    container.appendChild(box);
+  }
 
-    // Show hint
-    showHintBtn.addEventListener("click", () => {
-      hintText.style.display = "block";
-    });
-  </script>
+  function showHint() {
+    document.getElementById("hint").style.display = "block";
+  }
+</script>
+
 </body>
 </html>
