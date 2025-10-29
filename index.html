@@ -1,74 +1,73 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="utf-8"/>
-<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
 <title>Contronym: The Majorana of Meaning</title>
 <style>
-  :root{
-    --bg:#f9f7f2;
-    --ink:#333;
-    --accent:#00bfff;
-    --xaxis:#000;
-    --yaxis:#c02020;
-  }
-  html,body{height:100%;margin:0}
-  body{
-    font-family:system-ui, sans-serif;
-    background:var(--bg);
-    color:var(--ink);
-    display:flex;
-    flex-direction:column;
-    align-items:center;
-    padding:36px 16px 48px; /* lots of top padding so title never overlaps graph */
-    box-sizing:border-box;
-    gap:8px;
-  }
-  h1{font-size:2.2rem;margin:0}
-  h2{font-style:italic;margin:0 0 18px 0;color:#555;font-size:1rem}
-
-  /* container holds svg and axis visuals */
-  .game-container{
-    position:relative;
-    width:420px;           /* slightly larger than svg to avoid clipping at edges */
-    max-width:calc(100% - 40px);
+  body {
+    font-family: system-ui, sans-serif;
+    background: #f9f7f2;
+    color: #333;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 40px 0 80px;
+    min-height: 100vh;
+    box-sizing: border-box;
   }
 
-  /* svg sits inside, axes drawn inside svg to guarantee alignment */
-  svg{display:block;width:100%;height:auto}
+  h1 { font-size: 2.3rem; margin: 0; }
+  h2 { font-style: italic; margin: 0 0 30px 0; color: #555; }
 
-  /* answer area */
-  .answers{
-    margin-top:12px;
-    display:flex;
-    justify-content:center;
-    gap:6px;
-  }
-  .letter-box{
-    width:36px;height:36px;border:1px solid #444;border-radius:4px;
-    font-family:monospace;text-align:center;font-size:1.05rem;line-height:34px;
-    background:white;
+  .game-container {
+    position: relative;
+    width: 420px;
+    height: 360px;
   }
 
-  .controls{
-    display:flex;gap:10px;align-items:center;margin-top:10px;justify-content:center;
-  }
-  button{
-    padding:6px 10px;border-radius:6px;border:1px solid #bbb;background:#eee;cursor:pointer;
-  }
-  #hint-text{display:none;font-style:italic;color:#666;margin-top:8px;text-align:center}
-  #message{margin-top:8px;text-align:center;color:#0a7;font-style:italic}
+  svg { width: 100%; height: 100%; display: block; }
 
-  /* admin panel small */
-  #admin{
-    width:420px; max-width:100%; margin-top:14px; padding:8px; border-radius:8px;
-    background:#fff;border:1px dashed #ddd;font-size:0.9rem;
+  .answers {
+    display: flex;
+    justify-content: center;
+    gap: 6px;
+    margin-top: 16px;
   }
-  #admin label{display:block;margin:6px 0 2px 0;font-size:0.85rem;color:#444}
-  #admin input[type=text]{width:100%;padding:6px;border:1px solid #ccc;border-radius:6px}
-  #admin .inline{display:flex;gap:8px}
-  #admin .small{width:50%}
-  .note{font-size:0.8rem;color:#666;margin-top:6px}
+  .letter-box {
+    width: 36px;
+    height: 36px;
+    border: 1px solid #333;
+    border-radius: 4px;
+    text-align: center;
+    font-family: monospace;
+    font-size: 1.05rem;
+    background: #fff;
+  }
+
+  button {
+    margin-top: 10px;
+    padding: 6px 10px;
+    border: 1px solid #bbb;
+    border-radius: 6px;
+    background: #eee;
+    cursor: pointer;
+  }
+
+  #hint-text {
+    font-style: italic;
+    font-size: 0.85rem;
+    color: #666;
+    display: none;
+    margin-top: 8px;
+    text-align: center;
+  }
+
+  #message {
+    font-style: italic;
+    color: #007777;
+    margin-top: 8px;
+  }
 </style>
 </head>
 <body>
@@ -76,187 +75,49 @@
 <h1>Contronym</h1>
 <h2>The Majorana of Meaning</h2>
 
-<div class="game-container" id="gameContainer">
-  <!-- SVG graph:
-       viewBox coordinate system: (0,0) top-left, y increases downward.
-       We choose ends at y=60 and control (vertex) y=260 so parabola opens upward
-       and vertex sits near the x-axis drawn at y = 260. -->
-  <svg id="graph" viewBox="0 0 400 300" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-    <!-- x-axis and y-axis lines inside svg so coordinates match graph -->
-    <!-- x-axis (transverse) drawn at y = 260 -->
-    <line x1="0" y1="260" x2="400" y2="260" stroke="var(--xaxis)" stroke-width="2"/>
-    <!-- y-axis (conjugate) drawn through center -->
-    <line x1="200" y1="0" x2="200" y2="300" stroke="var(--yaxis)" stroke-width="2"/>
+<div class="game-container">
+  <svg viewBox="0 0 400 350" xmlns="http://www.w3.org/2000/svg">
+    <!-- Axes -->
+    <line x1="0" y1="300" x2="400" y2="300" stroke="#000" stroke-width="2"/>
+    <line x1="200" y1="0" x2="200" y2="350" stroke="#c02020" stroke-width="2"/>
 
-    <!-- dashed U parabola: M (left end) Q (control point near bottom) (right end) -->
-    <!-- left end x ~120, right end x ~280, control (vertex) at x=200,y=260 to almost touch x-axis -->
-    <path id="parabola" d="M 120 60 Q 200 260 280 60" stroke="var(--accent)" stroke-width="3"
+    <!-- Parabola (U shape, vertex moved down 100px) -->
+    <path d="M 100 60 Q 200 320 300 60" stroke="#00bfff" stroke-width="3"
           stroke-dasharray="6 6" fill="none" stroke-linecap="round"/>
 
-    <!-- side labels — we will set their text via JS to follow ends -->
-    <text id="leftText" x="0" y="0" font-size="14" font-style="italic" text-anchor="middle" fill="#222">permit</text>
-    <text id="rightText" x="0" y="0" font-size="14" font-style="italic" text-anchor="middle" fill="#222">restrict</text>
+    <!-- Side words -->
+    <text id="leftWord" x="80" y="55" text-anchor="end" font-style="italic" font-size="14">permit</text>
+    <text id="rightWord" x="320" y="55" text-anchor="start" font-style="italic" font-size="14">restrict</text>
 
-    <!-- axis labels -->
-    <text id="xLabel" x="360" y="255" font-size="12" font-style="italic" text-anchor="end" fill="#000">transverse</text>
-    <text id="yLabel" x="210" y="16" font-size="12" font-style="italic" text-anchor="start" fill="#000">conjugate</text>
+    <!-- Axis labels -->
+    <text x="370" y="290" font-style="italic" font-size="12">transverse</text>
+    <text x="210" y="16" font-style="italic" font-size="12">conjugate</text>
   </svg>
 </div>
 
-<!-- answer boxes placed below graph -->
 <div class="answers" id="answerBoxes"></div>
 
-<div class="controls">
-  <button id="showHintBtn">Show Hint</button>
-</div>
-
-<div id="hint-text"></div>
-<div id="message"></div>
-
-<!-- small admin panel so you can update word/side words/hint easily (web-only) -->
-<div id="admin" aria-hidden="false">
-  <div class="note">Admin — change the word, side labels and hint here (use weekly)</div>
-  <label for="wordInput">Answer word (uppercase preferred):</label>
-  <input id="wordInput" type="text" value="SANCTION" />
-
-  <div class="inline">
-    <div class="small">
-      <label for="leftInput">Left side word</label>
-      <input id="leftInput" type="text" value="permit" />
-    </div>
-    <div class="small">
-      <label for="rightInput">Right side word</label>
-      <input id="rightInput" type="text" value="restrict" />
-    </div>
-  </div>
-
-  <label for="hintInput">Hint text</label>
-  <input id="hintInput" type="text" value="A word that both authorizes and penalizes an action." />
-
-  <div style="margin-top:8px; display:flex; gap:8px;">
-    <button id="applyBtn">Apply changes</button>
-    <button id="resetBtn">Reset boxes</button>
-  </div>
-</div>
+<button id="showHintBtn">Show Hint</button>
+<p id="hint-text"></p>
+<p id="message"></p>
 
 <script>
-/*
-  Behavior:
-  - Parabola opens up as U. vertex near y=260 ~ x-axis.
-  - Left/right labels are SVG texts positioned at the parabola's ends.
-  - Answer word + side words + hint are editable with admin panel.
-  - Input boxes accept typing; auto-advance; correct answer shows message.
-*/
+  /* === Editable Configuration (for you) === */
+  const WORD = "SANCTION"; // <-- change this each week
+  const LEFT = "permit";   // <-- left word
+  const RIGHT = "restrict"; // <-- right word
+  const HINT = "A word that both authorizes and penalizes an action."; // <-- weekly hint
+  /* ======================================== */
 
-const cfg = {
-  word: (document.getElementById('wordInput').value || 'SANCTION').toUpperCase(),
-  left: document.getElementById('leftInput').value || 'permit',
-  right: document.getElementById('rightInput').value || 'restrict',
-  hint: document.getElementById('hintInput').value || 'A word that both authorizes and penalizes an action.'
-};
+  document.getElementById("leftWord").textContent = LEFT;
+  document.getElementById("rightWord").textContent = RIGHT;
+  const hintText = document.getElementById("hint-text");
+  hintText.textContent = HINT;
 
-const parabola = document.getElementById('parabola');
-const leftText = document.getElementById('leftText');
-const rightText = document.getElementById('rightText');
-const hintTextElt = document.getElementById('hint-text');
-const messageElt = document.getElementById('message');
-const answerBoxes = document.getElementById('answerBoxes');
+  const answerBoxes = document.getElementById("answerBoxes");
+  const message = document.getElementById("message");
 
-function placeSideLabels(){
-  // place the SVG text elements at the endpoints of the parabola
-  const path = parabola;
-  const len = path.getTotalLength();
-  const leftPoint = path.getPointAtLength(0);
-  const rightPoint = path.getPointAtLength(len);
-
-  // small offset so text sits just outside the curve (above the ends)
-  leftText.setAttribute('x', leftPoint.x - 22);
-  leftText.setAttribute('y', leftPoint.y - 10);
-  leftText.textContent = cfg.left;
-
-  rightText.setAttribute('x', rightPoint.x + 22);
-  rightText.setAttribute('y', rightPoint.y - 10);
-  rightText.textContent = cfg.right;
-}
-
-function buildAnswerBoxes(){
-  // clear existing
-  answerBoxes.innerHTML = '';
-  const w = cfg.word || '';
-  for(let i=0;i<w.length;i++){
-    const inp = document.createElement('input');
-    inp.type = 'text';
-    inp.maxLength = 1;
-    inp.className = 'letter-box';
-    inp.dataset.idx = i;
-    inp.autocomplete = 'off';
-    inp.spellcheck = false;
-    inp.addEventListener('input', onInputBox);
-    inp.addEventListener('keydown', onKeyDown);
-    answerBoxes.appendChild(inp);
-  }
-  // focus first box
-  const first = answerBoxes.querySelector('input');
-  if(first) first.focus();
-}
-
-function onInputBox(e){
-  const t = e.target;
-  t.value = (t.value || '').toUpperCase();
-  const idx = Number(t.dataset.idx);
-  if(t.value.length === 1){
-    // auto-next
-    const next = answerBoxes.querySelector(`input[data-idx="${idx+1}"]`);
-    if(next) next.focus();
-  }
-  checkAnswer();
-}
-
-function onKeyDown(e){
-  const t = e.target;
-  const idx = Number(t.dataset.idx);
-  if(e.key === 'Backspace' && !t.value){
-    const prev = answerBoxes.querySelector(`input[data-idx="${idx-1}"]`);
-    if(prev){ prev.focus(); prev.value=''; e.preventDefault(); }
-  }
-}
-
-function checkAnswer(){
-  let got = '';
-  const inputs = answerBoxes.querySelectorAll('input');
-  inputs.forEach(i=> got += (i.value || ''));
-  if(got === cfg.word){
-    messageElt.textContent = "Clever! You've found the correct inversion — like a Majorana neutrino, it is its own antineutrino.";
-  } else {
-    messageElt.textContent = '';
-  }
-}
-
-function applyAdmin(){
-  cfg.word = (document.getElementById('wordInput').value || '').toUpperCase();
-  cfg.left = document.getElementById('leftInput').value || '';
-  cfg.right = document.getElementById('rightInput').value || '';
-  cfg.hint = document.getElementById('hintInput').value || '';
-  hintTextElt.textContent = cfg.hint;
-  placeSideLabels();
-  buildAnswerBoxes();
-  messageElt.textContent = '';
-  hintTextElt.style.display = 'none';
-}
-
-// initial setup
-placeSideLabels();
-document.getElementById('hint-text').textContent = cfg.hint;
-buildAnswerBoxes();
-
-document.getElementById('showHintBtn').addEventListener('click', ()=>{
-  hintTextElt.style.display = 'block';
-});
-document.getElementById('applyBtn').addEventListener('click', applyAdmin);
-document.getElementById('resetBtn').addEventListener('click', buildAnswerBoxes);
-
-// Keep labels positioned if window resized (SVG may scale)
-window.addEventListener('resize', placeSideLabels);
-</script>
-</body>
-</html>
+  // build boxes
+  for (let i = 0; i < WORD.length; i++) {
+    const box = document.createElement("input");
+    box.type = "text";
