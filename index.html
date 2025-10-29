@@ -74,13 +74,6 @@
       left: 0;
     }
 
-    /* Neutrino trail moved below the graph */
-    .neutrino-path {
-      position: relative;
-      margin-top: 40px; /* spacing below graph */
-      pointer-events: none;
-    }
-
     .answer-boxes {
       display: flex;
       gap: 5px;
@@ -123,6 +116,12 @@
       padding: 5px 10px;
       font-size: 0.9rem;
     }
+
+    /* Neutrino path now below hint area */
+    .neutrino-path {
+      margin-top: 30px; /* space below hint box */
+      pointer-events: none;
+    }
   </style>
 </head>
 <body>
@@ -148,7 +147,14 @@
     </svg>
   </div>
 
-  <!-- Neutrino flight path BELOW graph -->
+  <!-- Answer boxes below the graph -->
+  <div class="answer-boxes" id="answer-boxes"></div>
+
+  <button id="show-hint">Show Hint</button>
+  <p id="hint-text"></p>
+  <p id="message"></p>
+
+  <!-- Neutrino flight path BELOW the hint -->
   <div class="neutrino-path">
     <svg width="240" height="100" viewBox="0 0 240 100">
       <!-- “bee-flight” wavy dashed path -->
@@ -163,13 +169,6 @@
       <text x="225" y="65" font-size="20" font-style="italic" font-family="serif" fill="#333">ν</text>
     </svg>
   </div>
-
-  <!-- Answer boxes below the graph -->
-  <div class="answer-boxes" id="answer-boxes"></div>
-
-  <button id="show-hint">Show Hint</button>
-  <p id="hint-text"></p>
-  <p id="message"></p>
 
   <script>
     // === Editable weekly variables ===
