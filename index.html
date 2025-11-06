@@ -282,3 +282,20 @@
   </script>
 </body>
 </html>
+function logPuzzleEvent(puzzle, action, player = "") {
+  fetch(https://script.google.com/macros/s/AKfycbwu1q-F510RTNn-zloV2MlCOwaMEWlrflKgFJhb-0xKV6W52x9wvtdk09jT32eGSQxA/exec, {
+    method: "POST",
+    headers: {"Content-Type": "application/json"},
+    body: JSON.stringify({ puzzle, action, player })
+  });
+}
+
+// Example usage:
+if (current === word) {
+  logPuzzleEvent(word, "completed");
+}
+
+showHintBtn.addEventListener("click", () => {
+  hintText.style.display = "block";
+  logPuzzleEvent(word, "hint_shown");
+});
