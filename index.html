@@ -76,7 +76,7 @@
 
     .neutrino-path {
       position: relative;
-      margin-top: 40px; /* spacing below graph */
+      margin-top: 40px;
       pointer-events: none;
     }
 
@@ -159,7 +159,6 @@
     <span class="label x-label">transverse</span>
     <span class="label y-label">conjugate</span>
 
-    <!-- Parabola: steeper, narrow, vertex lower -->
     <svg width="400" height="340" viewBox="0 0 400 340">
       <path d="M 120 60 Q 200 310 280 60"
             stroke="#00bfff"
@@ -169,7 +168,6 @@
     </svg>
   </div>
 
-  <!-- Neutrino flight path BELOW graph -->
   <div class="neutrino-path">
     <svg width="240" height="100" viewBox="0 0 240 100">
       <path d="M 10 60 
@@ -183,7 +181,6 @@
     </svg>
   </div>
 
-  <!-- Answer boxes below the graph -->
   <div class="answer-boxes" id="answer-boxes"></div>
 
   <button id="show-hint">Show Hint</button>
@@ -213,7 +210,21 @@
     const resetBtn = document.getElementById("reset-puzzle");
     const message = document.getElementById("message");
 
-    // Create input boxes
+    // === Tracking system ===
+    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwu1q-F510RTNn-zloV2MlCOwaMEWlrflKgFJhb-0xKV6W52x9wvtdk09jT32eGSQxA/exec";
+
+    function logPuzzleEvent(puzzle, action, player = "") {
+      fetch(SCRIPT_URL, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ puzzle, action, player })
+      }).catch(err => console.error("Logging failed:", err));
+    }
+
+    // Log page load
+    logPuzzleEvent(word, "page_load");
+
+    // === Create input boxes ===
     for (let i = 0; i < word.length; i++) {
       const box = document.createElement("input");
       box.type = "text";
@@ -223,13 +234,12 @@
       answerBoxes.appendChild(box);
     }
 
-    // Auto focus progression
+    // === Input handling ===
     answerBoxes.addEventListener("input", (e) => {
       const target = e.target;
       const index = parseInt(target.dataset.index);
       target.value = target.value.toUpperCase();
 
-      // Move focus to next
       if (target.value.length === 1) {
         const next = answerBoxes.children[index + 1];
         if (next) next.focus();
@@ -241,6 +251,7 @@
     // === Show Hint ===
     showHintBtn.addEventListener("click", () => {
       hintText.style.display = "block";
+      logPuzzleEvent(word, "hint_shown");
     });
 
     // === Reveal a Letter ===
@@ -253,6 +264,7 @@
       const i = parseInt(randomBox.dataset.index);
       randomBox.value = word[i];
       randomBox.classList.add("revealed");
+      logPuzzleEvent(word, "letter_revealed", `index_${i}`);
       checkWord();
     });
 
@@ -264,6 +276,7 @@
       }
       hintText.style.display = "none";
       message.textContent = "";
+      logPuzzleEvent(word, "reset");
     });
 
     // === Check Word ===
@@ -273,8 +286,8 @@
         current += box.value.toUpperCase();
       }
       if (current === word) {
-        message.textContent =
-          "You’ve found the correct inversion of the neutrino — it is its own antineutrino!";
+        message.textContent = "You’ve found the correct inversion of the neutrino — it is its own antineutrino!";
+        logPuzzleEvent(word, "completed");
       } else {
         message.textContent = "";
       }
@@ -282,20 +295,3 @@
   </script>
 </body>
 </html>
-function logPuzzleEvent(puzzle, action, player = "") {
-  fetch(https://script.google.com/macros/s/AKfycbwu1q-F510RTNn-zloV2MlCOwaMEWlrflKgFJhb-0xKV6W52x9wvtdk09jT32eGSQxA/exec, {
-    method: "POST",
-    headers: {"Content-Type": "application/json"},
-    body: JSON.stringify({ puzzle, action, player })
-  });
-}
-
-// Example usage:
-if (current === word) {
-  logPuzzleEvent(word, "completed");
-}
-
-showHintBtn.addEventListener("click", () => {
-  hintText.style.display = "block";
-  logPuzzleEvent(word, "hint_shown");
-});
