@@ -73,36 +73,27 @@
       line-height: 1.6;
     }
 
-    .x-label {
-      bottom: 20px;
-      right: 10px;
-      color: #0057a8;
-    }
-
-    .y-label {
-      top: 10px;
-      left: 52%;
-      color: #b11b2b;
-    }
+    .x-label { bottom: 20px; right: 10px; color: #0057a8; }
+    .y-label { top: 10px; left: 52%; color: #b11b2b; }
 
     .parabola-svg {
       position: absolute;
       bottom: -90px;
       left: 0;
       width: 100%;
-      height: absolute;
+      height: auto;
     }
 
-   .majorana-trail {
-  position: absolute;
-  left: 50%;
-  bottom: -12px;
-  transform: translateX(-50%);
-  pointer-events: none;
-  width: 240px;
-  height: 100px;
-  z-index: 4;
-}
+    .majorana-trail {
+      position: absolute;
+      left: 50%;
+      bottom: -12px;
+      transform: translateX(-50%);
+      pointer-events: none;
+      width: 240px;
+      height: 100px;
+      z-index: 4;
+    }
 
     .answer-boxes {
       display: flex;
@@ -127,15 +118,18 @@
 
     .revealed { background-color: #e0f7fa; }
 
+    #hint-text, #message, #attempts, #share-card {
+      max-width: 420px;
+      text-align: center;
+      padding: 0 12px;
+    }
+
     #hint-text {
       font-size: 0.85rem;
       font-style: italic;
       color: #666;
       margin-top: 10px;
       display: none;
-      text-align: center;
-      max-width: 420px;
-      padding: 0 12px;
     }
 
     #message {
@@ -143,9 +137,13 @@
       color: #008080;
       margin-top: 10px;
       font-style: italic;
-      text-align: center;
-      max-width: 420px;
-      padding: 0 12px;
+    }
+
+    #attempts {
+      margin-top: 8px;
+      font-size: 0.85rem;
+      color: #555;
+      font-style: italic;
     }
 
     button {
@@ -166,6 +164,37 @@
       font-size: 0.72rem;
       margin-left: 2px;
     }
+
+    #share-card {
+      display: none;
+      margin-top: 16px;
+      border: 1px solid #ddd;
+      border-radius: 14px;
+      background: #fffdf8;
+      padding: 14px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    }
+
+    .majorana-logo {
+      font-family: Georgia, serif;
+      font-size: 1.7rem;
+      font-weight: bold;
+      color: #b11b2b;
+    }
+
+    .share-result {
+      font-weight: 700;
+      margin-top: 6px;
+      color: #0057a8;
+    }
+
+    #share-text {
+      white-space: pre-line;
+      font-family: monospace;
+      font-size: 0.82rem;
+      margin-top: 8px;
+      color: #333;
+    }
   </style>
 </head>
 
@@ -183,12 +212,12 @@
     <span class="label y-label">conjugate</span>
 
     <svg class="parabola-svg" width="400" height="340" viewBox="0 0 400 340">
-<path d="M 95 40 Q 200 340 305 40"
-        stroke="#00bfff"
-        stroke-width="2"
-        stroke-dasharray="6 6"
-        fill="none" />
-</svg>
+      <path d="M 95 40 Q 200 340 305 40"
+            stroke="#00bfff"
+            stroke-width="2"
+            stroke-dasharray="6 6"
+            fill="none" />
+    </svg>
 
     <svg class="majorana-trail" width="240" height="100" viewBox="0 0 240 100">
       <path d="M 10 60 
@@ -204,6 +233,8 @@
 
   <div class="answer-boxes" id="answer-boxes"></div>
 
+  <p id="attempts">Attempts: 0 / 3</p>
+
   <button id="show-hint">Reveal Hint Word</button>
   <p id="hint-text"></p>
 
@@ -211,6 +242,13 @@
   <button id="reset-puzzle">Reset Puzzle</button>
 
   <p id="message"></p>
+
+  <div id="share-card">
+    <div class="majorana-logo">Cν</div>
+    <div class="share-result" id="share-result"></div>
+    <div id="share-text"></div>
+    <button id="copy-share">Copy Share Result</button>
+  </div>
 
   <script>
     const puzzle = {
@@ -228,6 +266,9 @@
 
     const word = puzzle.word.toUpperCase();
     let visibleHintCount = 2;
+    let attempts = 0;
+    let solved = false;
+    let lastSubmitted = "";
 
     document.addEventListener("DOMContentLoaded", () => {
       const answerBoxes = document.getElementById("answer-boxes");
@@ -236,8 +277,13 @@
       const revealLetterBtn = document.getElementById("reveal-letter");
       const resetBtn = document.getElementById("reset-puzzle");
       const message = document.getElementById("message");
+      const attemptsText = document.getElementById("attempts");
       const leftLabel = document.getElementById("left-label");
       const rightLabel = document.getElementById("right-label");
+      const shareCard = document.getElementById("share-card");
+      const shareResult = document.getElementById("share-result");
+      const shareText = document.getElementById("share-text");
+      const copyShareBtn = document.getElementById("copy-share");
 
       function renderHints() {
         const shownHints = puzzle.hints.slice(0, visibleHintCount);
@@ -269,20 +315,82 @@
         }
       }
 
-      function checkWord() {
+      function getCurrentGuess() {
         let current = "";
         for (let box of answerBoxes.children) {
           current += box.value.toUpperCase();
         }
+        return current;
+      }
 
-        message.textContent =
-          current === word
-            ? "You’ve found the Majorana of Meaning — one word, two opposite charges."
-            : "";
+      function updateAttempts() {
+        attemptsText.textContent = `Attempts: ${attempts} / 3`;
+      }
+
+      function lockBoxes() {
+        for (let box of answerBoxes.children) {
+          box.disabled = true;
+        }
+      }
+
+      function getShareTitle() {
+        if (!solved) return "No Majorana found";
+        if (attempts === 1) return "Majorana in One";
+        if (attempts === 2) return "Majorana in Two";
+        return "Majorana in Three";
+      }
+
+      function buildShareText() {
+        const rows = [];
+        for (let i = 1; i <= 3; i++) {
+          if (solved && i <= attempts) rows.push(i === attempts ? "🟦🟥 Cν" : "⬜⬜⬜");
+          else if (!solved && i <= attempts) rows.push("⬛⬛⬛");
+          else rows.push("⬜⬜⬜");
+        }
+
+        return `Contronym: The Majorana of Meaning
+${getShareTitle()}
+${rows.join("\n")}
++ / − semantic polarity
+Play at PAT Tutoring`;
+      }
+
+      function showShareCard() {
+        shareCard.style.display = "block";
+        shareResult.textContent = getShareTitle();
+        shareText.textContent = buildShareText();
+      }
+
+      function checkWord() {
+        if (solved || attempts >= 3) return;
+
+        const current = getCurrentGuess();
+
+        if (current.length !== word.length || current.includes("")) return;
+        if ([...answerBoxes.children].some(box => box.value === "")) return;
+        if (current === lastSubmitted) return;
+
+        lastSubmitted = current;
+        attempts++;
+        updateAttempts();
+
+        if (current === word) {
+          solved = true;
+          message.textContent = getShareTitle() + " — you found the Majorana of Meaning.";
+          lockBoxes();
+          showShareCard();
+        } else if (attempts >= 3) {
+          message.textContent = `The Majorana was ${word}.`;
+          lockBoxes();
+          showShareCard();
+        } else {
+          message.textContent = `Not quite — ${3 - attempts} attempt${3 - attempts === 1 ? "" : "s"} left.`;
+        }
       }
 
       createBoxes();
       renderHints();
+      updateAttempts();
 
       answerBoxes.addEventListener("input", (e) => {
         const target = e.target;
@@ -297,6 +405,16 @@
         checkWord();
       });
 
+      answerBoxes.addEventListener("keydown", (e) => {
+        const target = e.target;
+        const index = parseInt(target.dataset.index);
+
+        if (e.key === "Backspace" && target.value === "") {
+          const previous = answerBoxes.children[index - 1];
+          if (previous) previous.focus();
+        }
+      });
+
       showHintBtn.addEventListener("click", () => {
         if (visibleHintCount < puzzle.hints.length) {
           visibleHintCount++;
@@ -307,6 +425,8 @@
       });
 
       revealLetterBtn.addEventListener("click", () => {
+        if (solved || attempts >= 3) return;
+
         const boxes = Array.from(answerBoxes.children);
         const unrevealed = boxes.filter((box, i) => box.value.toUpperCase() !== word[i]);
         if (unrevealed.length === 0) return;
@@ -316,19 +436,36 @@
 
         randomBox.value = word[i];
         randomBox.classList.add("revealed");
-        checkWord();
       });
 
       resetBtn.addEventListener("click", () => {
+        attempts = 0;
+        solved = false;
+        lastSubmitted = "";
+        visibleHintCount = 2;
+
         for (let box of answerBoxes.children) {
           box.value = "";
+          box.disabled = false;
           box.classList.remove("revealed");
         }
 
-        visibleHintCount = 2;
         renderHints();
+        updateAttempts();
         hintText.style.display = "none";
         message.textContent = "";
+        shareCard.style.display = "none";
+      });
+
+      copyShareBtn.addEventListener("click", async () => {
+        const text = shareText.textContent;
+        try {
+          await navigator.clipboard.writeText(text);
+          copyShareBtn.textContent = "Copied!";
+          setTimeout(() => copyShareBtn.textContent = "Copy Share Result", 1200);
+        } catch {
+          alert(text);
+        }
       });
     });
   </script>
