@@ -1,354 +1,60 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Contronym: The Majorana of Meaning</title>
-
-<style>
-:root {
-  --paper:#f9f7f2;
-  --ink:#333;
-  --blue:#0057a8;
-  --curve:#00bfff;
-  --red:#b11b2b;
-}
-
-body {
-  margin:0;
-  padding:28px 12px;
-  min-height:100vh;
-  background:var(--paper);
-  color:var(--ink);
-  font-family:system-ui,sans-serif;
-  display:flex;
-  flex-direction:column;
-  align-items:center;
-}
-
-h1 {
-  margin:0;
-  font-size:clamp(2rem,8vw,2.8rem);
-}
-
-h2 {
-  margin:.25em 0 1.2em;
-  font-size:clamp(1rem,4vw,1.25rem);
-  font-style:italic;
-  font-weight:500;
-  text-align:center;
-}
-
-.game-container {
-  position:relative;
-  width:min(92vw,400px);
-  height:420px;
-}
-
-.axis {
-  position:absolute;
-  z-index:2;
-}
-
-.x-axis {
-  width:100%;
-  height:2px;
-  left:0;
-  bottom:170px;
-  background:var(--blue);
-}
-
-.y-axis {
-  width:2px;
-  height:100%;
-  left:50%;
-  bottom:0;
-  transform:translateX(-50%);
-  background:var(--red);
-}
-
-.axis-letter {
-  position:absolute;
-  font-family:Georgia,serif;
-  font-style:italic;
-  font-weight:800;
-  font-size:2rem;
-  z-index:6;
-  background:var(--paper);
-  padding:0 4px;
-  line-height:1;
-}
-
-.axis-c {
-  color:var(--red);
-  top:8px;
-  left:calc(50% + 12px);
-}
-
-.axis-t {
-  color:var(--blue);
-  right:8px;
-  bottom:138px;
-}
-
-.curve-svg {
-  position:absolute;
-  left:0;
-  bottom:0;
-  width:100%;
-  height:400px;
-  z-index:1;
-  overflow:visible;
-}
-
-.hint-column {
-  position:absolute;
-  top:88px;
-  width:125px;
-  display:flex;
-  flex-direction:column;
-  gap:10px;
-  font-style:italic;
-  font-size:.95rem;
-  z-index:5;
-}
-
-.negative-hints {
-  left:10px;
-  color:#8b1e1e;
-  text-align:left;
-}
-
-.positive-hints {
-  right:10px;
-  color:var(--blue);
-  text-align:right;
-}
-
-.hint-word {
-  background:rgba(249,247,242,.82);
-  border-radius:8px;
-  padding:2px 5px;
-  width:fit-content;
-}
-
-.positive-hints .hint-word {
-  margin-left:auto;
-}
-
-.charge {
-  font-size:.75rem;
-  vertical-align:super;
-  font-weight:900;
-  margin-left:2px;
-  font-style:normal;
-}
-
-.majorana-dot {
-  position:absolute;
-  right:44px;
-  bottom:170px;
-  width:14px;
-  height:14px;
-  border-radius:50%;
-  background:var(--ink);
-  transform:translateY(50%);
-  z-index:7;
-  box-shadow:0 0 0 4px rgba(249,247,242,.9);
-}
-
-.majorana-label {
-  position:absolute;
-  right:18px;
-  bottom:142px;
-  font-size:.75rem;
-  font-weight:700;
-  z-index:7;
-  background:var(--paper);
-  padding:0 3px;
-}
-
-.neutrino-trail {
-  position:absolute;
-  right:34px;
-  bottom:110px;
-  width:190px;
-  height:125px;
-  z-index:6;
-  pointer-events:none;
-}
-
-.answer-boxes {
-  display:flex;
-  gap:5px;
-  justify-content:center;
-  flex-wrap:wrap;
-  margin-top:8px;
-  max-width:95vw;
-}
-
-.letter-box {
-  width:34px;
-  height:34px;
-  border:1px solid var(--ink);
-  border-radius:4px;
-  font-family:monospace;
-  font-size:1.1rem;
-  background:white;
-  text-align:center;
-  text-transform:uppercase;
-}
-
-.revealed {
-  background:#e0f7fa;
-}
-
-.button-row {
-  display:flex;
-  gap:8px;
-  flex-wrap:wrap;
-  justify-content:center;
-  margin-top:12px;
-}
-
-button {
-  padding:8px 13px;
-  font-size:.95rem;
-  border:none;
-  border-radius:10px;
-  cursor:pointer;
-  background:#d8ecf3;
-}
-
-#reset-puzzle {
-  background:#f3d8d8;
-}
-
-#hint-text {
-  max-width:420px;
-  font-size:.9rem;
-  font-style:italic;
-  color:#666;
-  margin-top:12px;
-  display:none;
-  text-align:center;
-}
-
-#message {
-  max-width:420px;
-  font-size:.95rem;
-  color:#008080;
-  margin-top:10px;
-  font-style:italic;
-  text-align:center;
-}
-
-@media (max-width:430px) {
-  .game-container { height:385px; }
-  .hint-column { width:108px; font-size:.85rem; top:92px; }
-  .letter-box { width:31px; height:31px; }
-}
-</style>
-</head>
-
-<body>
-<h1>Contronym</h1>
-<h2>The Majorana of Meaning</h2>
-
-<div class="game-container">
-  <div class="axis x-axis"></div>
-  <div class="axis y-axis"></div>
-
-  <span class="axis-letter axis-c">C</span>
-  <span class="axis-letter axis-t">T</span>
-
-  <div class="hint-column negative-hints" id="negative-hints"></div>
-  <div class="hint-column positive-hints" id="positive-hints"></div>
-
-  <svg class="curve-svg" viewBox="0 0 400 400" preserveAspectRatio="none">
-    <!-- x-axis is visually around y=250; vertex is y=300, clearly below it -->
-    <path d="M 70 70 Q 200 300 330 70"
-      stroke="#00bfff"
-      stroke-width="2.5"
-      stroke-dasharray="7 7"
-      fill="none" />
-  </svg>
-
-  <svg class="neutrino-trail" viewBox="0 0 190 125">
-    <path d="M 5 62
-             C 35 5, 75 5, 95 62
-             C 115 120, 155 120, 185 62
-             C 155 5, 115 5, 95 62
-             C 75 120, 35 120, 5 62"
-      stroke="#777"
-      stroke-width="2"
-      stroke-dasharray="5 5"
-      fill="none" />
-    <text x="170" y="58" font-size="23" font-style="italic" font-family="Georgia,serif">ν</text>
-  </svg>
-
-  <div class="majorana-dot"></div>
-  <div class="majorana-label">Majorana</div>
-</div>
-
-<div class="answer-boxes" id="answer-boxes"></div>
-
-<div class="button-row">
-  <button id="show-hint">Reveal Hint Word</button>
-  <button id="reveal-letter">Reveal Letter</button>
-  <button id="reset-puzzle">Reset</button>
-</div>
-
-<p id="hint-text"></p>
-<p id="message"></p>
-
+<!-- Paste your full current HTML here, then replace ONLY the <script>...</script> section with this. -->
 <script>
-const puzzle = {
-  word: "SANCTION",
-  hints: [
-    { word: "restrict", charge: "-" },
-    { word: "permit", charge: "+" },
-    { word: "penalize", charge: "-" },
-    { word: "authorize", charge: "+" },
-    { word: "punish", charge: "-" },
-    { word: "approve", charge: "+" }
-  ],
-  message: "A word that can officially approve or penalize depending on context."
-};
+  // === EDIT ONLY THIS SECTION EACH WEEK ===
+  const puzzle = {
+    word: "SANCTION",
+    hints: [
+      { word: "permit", charge: "+" },
+      { word: "restrict", charge: "-" },
+      { word: "authorize", charge: "+" },
+      { word: "penalize", charge: "-" },
+      { word: "approve", charge: "+" },
+      { word: "punish", charge: "-" }
+    ],
+    message: "A word that can officially approve or penalize depending on context."
+  };
 
-const word = puzzle.word.toUpperCase();
-let visibleHintCount = 2;
-let completedLogged = false;
+  const word = puzzle.word.toUpperCase();
+  let visibleHintCount = 2;
 
-const answerBoxes = document.getElementById("answer-boxes");
-const hintText = document.getElementById("hint-text");
-const showHintBtn = document.getElementById("show-hint");
-const revealLetterBtn = document.getElementById("reveal-letter");
-const resetBtn = document.getElementById("reset-puzzle");
-const message = document.getElementById("message");
+  const answerBoxes = document.getElementById("answer-boxes");
+  const hintText = document.getElementById("hint-text");
+  const showHintBtn = document.getElementById("show-hint");
+  const revealLetterBtn = document.getElementById("reveal-letter");
+  const resetBtn = document.getElementById("reset-puzzle");
+  const message = document.getElementById("message");
 
-function renderHints() {
-  const shownHints = puzzle.hints.slice(0, visibleHintCount);
+  const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyk7Kx-U0hQ1k3B5FGVYsrNMIpvksribCqk2-2GT8Bmwoo8PhX1r3gu-bZo747Dr727/exec";
 
-  document.getElementById("negative-hints").innerHTML =
-    shownHints
+  function logPuzzleEvent(puzzleWord, action, player = "") {
+    fetch(SCRIPT_URL, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ puzzle: puzzleWord, action, player })
+    }).catch(err => console.error("Logging failed:", err));
+  }
+
+  function renderHints() {
+    const shownHints = puzzle.hints.slice(0, visibleHintCount);
+
+    const negativeHints = shownHints
       .filter(h => h.charge === "-")
-      .map(h => `<div class="hint-word">${h.word}<span class="charge">−</span></div>`)
-      .join("");
+      .map(h => `${h.word}<sup>−</sup>`)
+      .join("<br>");
 
-  document.getElementById("positive-hints").innerHTML =
-    shownHints
+    const positiveHints = shownHints
       .filter(h => h.charge === "+")
-      .map(h => `<div class="hint-word">${h.word}<span class="charge">+</span></div>`)
-      .join("");
+      .map(h => `${h.word}<sup>+</sup>`)
+      .join("<br>");
 
-  hintText.textContent = puzzle.message;
-  showHintBtn.textContent =
-    visibleHintCount >= puzzle.hints.length ? "Show Full Hint" : "Reveal Hint Word";
-}
+    document.getElementById("left-label").innerHTML = negativeHints || "negative";
+    document.getElementById("right-label").innerHTML = positiveHints || "positive";
+    hintText.textContent = puzzle.message;
+  }
 
-function createAnswerBoxes() {
-  answerBoxes.innerHTML = "";
+  renderHints();
+  logPuzzleEvent(word, "page_load");
+
   for (let i = 0; i < word.length; i++) {
     const box = document.createElement("input");
     box.type = "text";
@@ -357,83 +63,72 @@ function createAnswerBoxes() {
     box.dataset.index = i;
     answerBoxes.appendChild(box);
   }
-}
 
-answerBoxes.addEventListener("input", e => {
-  const target = e.target;
-  const index = Number(target.dataset.index);
-  target.value = target.value.toUpperCase();
+  answerBoxes.addEventListener("input", (e) => {
+    const target = e.target;
+    const index = parseInt(target.dataset.index);
+    target.value = target.value.toUpperCase();
 
-  if (target.value.length === 1) {
-    const next = answerBoxes.children[index + 1];
-    if (next) next.focus();
-  }
+    if (target.value.length === 1) {
+      const next = answerBoxes.children[index + 1];
+      if (next) next.focus();
+    }
 
-  checkWord();
-});
+    checkWord();
+  });
 
-answerBoxes.addEventListener("keydown", e => {
-  const target = e.target;
-  const index = Number(target.dataset.index);
+  showHintBtn.addEventListener("click", () => {
+    if (visibleHintCount < puzzle.hints.length) {
+      visibleHintCount++;
+      renderHints();
+      logPuzzleEvent(word, "hint_word_revealed");
+    } else {
+      hintText.style.display = "block";
+      logPuzzleEvent(word, "full_hint_shown");
+    }
+  });
 
-  if (e.key === "Backspace" && target.value === "") {
-    const previous = answerBoxes.children[index - 1];
-    if (previous) previous.focus();
-  }
-});
+  revealLetterBtn.addEventListener("click", () => {
+    const boxes = Array.from(answerBoxes.children);
+    const unrevealed = boxes.filter((box, i) => box.value.toUpperCase() !== word[i]);
+    if (unrevealed.length === 0) return;
 
-showHintBtn.addEventListener("click", () => {
-  if (visibleHintCount < puzzle.hints.length) {
-    visibleHintCount++;
+    const randomBox = unrevealed[Math.floor(Math.random() * unrevealed.length)];
+    const i = parseInt(randomBox.dataset.index);
+    randomBox.value = word[i];
+    randomBox.classList.add("revealed");
+
+    logPuzzleEvent(word, "letter_revealed", `index_${i}`);
+    checkWord();
+  });
+
+  resetBtn.addEventListener("click", () => {
+    for (let box of answerBoxes.children) {
+      box.value = "";
+      box.classList.remove("revealed");
+    }
+
+    visibleHintCount = 2;
     renderHints();
-  } else {
-    hintText.style.display = "block";
-  }
-});
-
-revealLetterBtn.addEventListener("click", () => {
-  const boxes = Array.from(answerBoxes.children);
-  const unrevealed = boxes.filter((box, i) => box.value.toUpperCase() !== word[i]);
-  if (!unrevealed.length) return;
-
-  const randomBox = unrevealed[Math.floor(Math.random() * unrevealed.length)];
-  const i = Number(randomBox.dataset.index);
-
-  randomBox.value = word[i];
-  randomBox.classList.add("revealed");
-  checkWord();
-});
-
-resetBtn.addEventListener("click", () => {
-  for (let box of answerBoxes.children) {
-    box.value = "";
-    box.classList.remove("revealed");
-  }
-
-  visibleHintCount = 2;
-  completedLogged = false;
-  hintText.style.display = "none";
-  message.textContent = "";
-  renderHints();
-});
-
-function checkWord() {
-  let current = "";
-  for (let box of answerBoxes.children) {
-    current += box.value.toUpperCase();
-  }
-
-  if (current === word) {
-    message.textContent =
-      "You’ve found the Majorana of Meaning — one word, two opposite charges.";
-    completedLogged = true;
-  } else {
+    hintText.style.display = "none";
     message.textContent = "";
-  }
-}
 
-renderHints();
-createAnswerBoxes();
+    logPuzzleEvent(word, "reset");
+  });
+
+  function checkWord() {
+    let current = "";
+
+    for (let box of answerBoxes.children) {
+      current += box.value.toUpperCase();
+    }
+
+    if (current === word) {
+      message.textContent =
+        "You’ve found the Majorana of Meaning — one word, two opposite charges.";
+      logPuzzleEvent(word, "completed");
+    } else {
+      message.textContent = "";
+    }
+  }
 </script>
-</body>
-</html>
