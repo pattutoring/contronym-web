@@ -1,6 +1,4 @@
-<!-- Paste your full current HTML here, then replace ONLY the <script>...</script> section with this. -->
 <script>
-  // === EDIT ONLY THIS SECTION EACH WEEK ===
   const puzzle = {
     word: "SANCTION",
     hints: [
@@ -16,6 +14,7 @@
 
   const word = puzzle.word.toUpperCase();
   let visibleHintCount = 2;
+  let completedLogged = false;
 
   const answerBoxes = document.getElementById("answer-boxes");
   const hintText = document.getElementById("hint-text");
@@ -23,15 +22,17 @@
   const revealLetterBtn = document.getElementById("reveal-letter");
   const resetBtn = document.getElementById("reset-puzzle");
   const message = document.getElementById("message");
+  const leftLabel = document.getElementById("left-label");
+  const rightLabel = document.getElementById("right-label");
 
   const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyk7Kx-U0hQ1k3B5FGVYsrNMIpvksribCqk2-2GT8Bmwoo8PhX1r3gu-bZo747Dr727/exec";
 
   function logPuzzleEvent(puzzleWord, action, player = "") {
     fetch(SCRIPT_URL, {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: { "Content-Type": "text/plain;charset=utf-8" },
       body: JSON.stringify({ puzzle: puzzleWord, action, player })
-    }).catch(err => console.error("Logging failed:", err));
+    }).catch(err => console.log("Logging skipped:", err));
   }
 
   function renderHints() {
@@ -47,26 +48,37 @@
       .map(h => `${h.word}<sup>+</sup>`)
       .join("<br>");
 
-    document.getElementById("left-label").innerHTML = negativeHints || "negative";
-    document.getElementById("right-label").innerHTML = positiveHints || "positive";
-    hintText.textContent = puzzle.message;
+    if (leftLabel) leftLabel.innerHTML = negativeHints || "negative";
+    if (rightLabel) rightLabel.innerHTML = positiveHints || "positive";
+    if (hintText) hintText.textContent = puzzle.message;
+
+    if (showHintBtn) {
+      showHintBtn.textContent =
+        visibleHintCount >= puzzle.hints.length ? "Show Full Hint" : "Reveal Hint Word";
+    }
   }
 
+  function createBoxes() {
+    answerBoxes.innerHTML = "";
+
+    for (let i = 0; i < word.length; i++) {
+      const box = document.createElement("input");
+      box.type = "text";
+      box.maxLength = 1;
+      box.className = "letter-box";
+      box.dataset.index = i;
+      answerBoxes.appendChild(box);
+    }
+  }
+
+  createBoxes();
   renderHints();
   logPuzzleEvent(word, "page_load");
-
-  for (let i = 0; i < word.length; i++) {
-    const box = document.createElement("input");
-    box.type = "text";
-    box.maxLength = 1;
-    box.className = "letter-box";
-    box.dataset.index = i;
-    answerBoxes.appendChild(box);
-  }
 
   answerBoxes.addEventListener("input", (e) => {
     const target = e.target;
     const index = parseInt(target.dataset.index);
+
     target.value = target.value.toUpperCase();
 
     if (target.value.length === 1) {
@@ -91,10 +103,12 @@
   revealLetterBtn.addEventListener("click", () => {
     const boxes = Array.from(answerBoxes.children);
     const unrevealed = boxes.filter((box, i) => box.value.toUpperCase() !== word[i]);
+
     if (unrevealed.length === 0) return;
 
     const randomBox = unrevealed[Math.floor(Math.random() * unrevealed.length)];
     const i = parseInt(randomBox.dataset.index);
+
     randomBox.value = word[i];
     randomBox.classList.add("revealed");
 
@@ -109,6 +123,7 @@
     }
 
     visibleHintCount = 2;
+    completedLogged = false;
     renderHints();
     hintText.style.display = "none";
     message.textContent = "";
@@ -126,7 +141,11 @@
     if (current === word) {
       message.textContent =
         "You’ve found the Majorana of Meaning — one word, two opposite charges.";
-      logPuzzleEvent(word, "completed");
+
+      if (!completedLogged) {
+        logPuzzleEvent(word, "completed");
+        completedLogged = true;
+      }
     } else {
       message.textContent = "";
     }
