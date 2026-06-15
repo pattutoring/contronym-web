@@ -1,529 +1,439 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Contronym: The Majorana of Meaning</title>
 
-  <title>Contronym: The Majorana of Meaning</title>
+<style>
+:root {
+  --paper:#f9f7f2;
+  --ink:#333;
+  --blue:#0057a8;
+  --curve:#00bfff;
+  --red:#b11b2b;
+}
 
-  <style>
-    :root {
-      --paper: #f9f7f2;
-      --ink: #333333;
-      --blue: #0057a8;
-      --curve-blue: #00bfff;
-      --red: #b11b2b;
-      --teal: #008080;
-    }
+body {
+  margin:0;
+  padding:28px 12px;
+  min-height:100vh;
+  background:var(--paper);
+  color:var(--ink);
+  font-family:system-ui,sans-serif;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+}
 
-    body {
-      font-family: system-ui, sans-serif;
-      background-color: var(--paper);
-      color: var(--ink);
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      min-height: 100vh;
-      padding: 28px 12px;
-      margin: 0;
-      box-sizing: border-box;
-    }
+h1 {
+  margin:0;
+  font-size:clamp(2rem,8vw,2.8rem);
+}
 
-    h1 {
-      font-size: clamp(2rem, 8vw, 2.8rem);
-      margin: 0;
-      letter-spacing: 0.02em;
-    }
+h2 {
+  margin:.25em 0 1.2em;
+  font-size:clamp(1rem,4vw,1.25rem);
+  font-style:italic;
+  font-weight:500;
+  text-align:center;
+}
 
-    h2 {
-      font-size: clamp(1rem, 4vw, 1.25rem);
-      font-style: italic;
-      margin: 0.25em 0 1.2em;
-      text-align: center;
-      font-weight: 500;
-    }
+.game-container {
+  position:relative;
+  width:min(92vw,400px);
+  height:420px;
+}
 
-    .game-container {
-      position: relative;
-      width: min(92vw, 400px);
-      height: 420px;
-      margin-bottom: 10px;
-    }
+.axis {
+  position:absolute;
+  z-index:2;
+}
 
-    .axis {
-      position: absolute;
-      z-index: 2;
-    }
+.x-axis {
+  width:100%;
+  height:2px;
+  left:0;
+  bottom:170px;
+  background:var(--blue);
+}
 
-    .x-axis {
-      width: 100%;
-      height: 2px;
-      background: var(--blue);
-      bottom: 175px;
-      left: 0;
-    }
+.y-axis {
+  width:2px;
+  height:100%;
+  left:50%;
+  bottom:0;
+  transform:translateX(-50%);
+  background:var(--red);
+}
 
-    .y-axis {
-      width: 2px;
-      height: 100%;
-      left: 50%;
-      bottom: 0;
-      transform: translateX(-50%);
-      background: var(--red);
-    }
+.axis-letter {
+  position:absolute;
+  font-family:Georgia,serif;
+  font-style:italic;
+  font-weight:800;
+  font-size:2rem;
+  z-index:6;
+  background:var(--paper);
+  padding:0 4px;
+  line-height:1;
+}
 
-    .axis-letter {
-      position: absolute;
-      z-index: 7;
-      font-family: Georgia, "Times New Roman", serif;
-      font-style: italic;
-      font-weight: 800;
-      line-height: 1;
-      text-shadow: 0 1px 0 rgba(249, 247, 242, 0.9);
-    }
+.axis-c {
+  color:var(--red);
+  top:8px;
+  left:calc(50% + 12px);
+}
 
-    .axis-c {
-      top: 8px;
-      left: calc(50% + 8px);
-      color: var(--red);
-      font-size: 2.2rem;
-    }
+.axis-t {
+  color:var(--blue);
+  right:8px;
+  bottom:138px;
+}
 
-    .axis-t {
-      bottom: 148px;
-      right: 8px;
-      color: var(--blue);
-      font-size: 2.1rem;
-    }
+.curve-svg {
+  position:absolute;
+  left:0;
+  bottom:0;
+  width:100%;
+  height:400px;
+  z-index:1;
+  overflow:visible;
+}
 
-    .curve-svg {
-      position: absolute;
-      left: 0;
-      bottom: 0;
-      width: 100%;
-      height: 400px;
-      z-index: 1;
-      overflow: visible;
-    }
+.hint-column {
+  position:absolute;
+  top:88px;
+  width:125px;
+  display:flex;
+  flex-direction:column;
+  gap:10px;
+  font-style:italic;
+  font-size:.95rem;
+  z-index:5;
+}
 
-    .majorana-dot {
-      position: absolute;
-      left: 50%;
-      bottom: 160px;
-      width: 14px;
-      height: 14px;
-      transform: translate(-50%, 50%);
-      border-radius: 50%;
-      background: var(--ink);
-      z-index: 6;
-      box-shadow: 0 0 0 4px rgba(249, 247, 242, 0.85);
-    }
+.negative-hints {
+  left:10px;
+  color:#8b1e1e;
+  text-align:left;
+}
 
-    .majorana-label {
-      position: absolute;
-      left: 50%;
-      bottom: 134px;
-      transform: translateX(-50%);
-      font-size: 0.76rem;
-      font-weight: 700;
-      letter-spacing: 0.04em;
-      color: var(--ink);
-      z-index: 6;
-      white-space: nowrap;
-    }
+.positive-hints {
+  right:10px;
+  color:var(--blue);
+  text-align:right;
+}
 
-    .hint-column {
-      position: absolute;
-      top: 88px;
-      width: 130px;
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-      font-style: italic;
-      font-size: 0.95rem;
-      z-index: 8;
-    }
+.hint-word {
+  background:rgba(249,247,242,.82);
+  border-radius:8px;
+  padding:2px 5px;
+  width:fit-content;
+}
 
-    .negative-hints {
-      left: 10px;
-      color: #8b1e1e;
-      text-align: left;
-    }
+.positive-hints .hint-word {
+  margin-left:auto;
+}
 
-    .positive-hints {
-      right: 10px;
-      color: var(--blue);
-      text-align: right;
-    }
+.charge {
+  font-size:.75rem;
+  vertical-align:super;
+  font-weight:900;
+  margin-left:2px;
+  font-style:normal;
+}
 
-    .hint-word {
-      background: rgba(249, 247, 242, 0.78);
-      border-radius: 8px;
-      padding: 2px 5px;
-      width: fit-content;
-      max-width: 120px;
-    }
+.majorana-dot {
+  position:absolute;
+  right:44px;
+  bottom:170px;
+  width:14px;
+  height:14px;
+  border-radius:50%;
+  background:var(--ink);
+  transform:translateY(50%);
+  z-index:7;
+  box-shadow:0 0 0 4px rgba(249,247,242,.9);
+}
 
-    .positive-hints .hint-word {
-      margin-left: auto;
-    }
+.majorana-label {
+  position:absolute;
+  right:18px;
+  bottom:142px;
+  font-size:.75rem;
+  font-weight:700;
+  z-index:7;
+  background:var(--paper);
+  padding:0 3px;
+}
 
-    .charge {
-      font-size: 0.75rem;
-      vertical-align: super;
-      font-weight: 900;
-      margin-left: 2px;
-      font-style: normal;
-    }
+.neutrino-trail {
+  position:absolute;
+  right:34px;
+  bottom:110px;
+  width:190px;
+  height:125px;
+  z-index:6;
+  pointer-events:none;
+}
 
-    .neutrino-orbit {
-      position: absolute;
-      left: 50%;
-      bottom: 128px;
-      transform: translateX(-50%);
-      width: 148px;
-      height: 92px;
-      z-index: 5;
-      pointer-events: none;
-    }
+.answer-boxes {
+  display:flex;
+  gap:5px;
+  justify-content:center;
+  flex-wrap:wrap;
+  margin-top:8px;
+  max-width:95vw;
+}
 
-    .answer-boxes {
-      display: flex;
-      gap: 5px;
-      justify-content: center;
-      flex-wrap: wrap;
-      margin-top: 4px;
-      max-width: 95vw;
-    }
+.letter-box {
+  width:34px;
+  height:34px;
+  border:1px solid var(--ink);
+  border-radius:4px;
+  font-family:monospace;
+  font-size:1.1rem;
+  background:white;
+  text-align:center;
+  text-transform:uppercase;
+}
 
-    .letter-box {
-      width: 34px;
-      height: 34px;
-      border: 1px solid var(--ink);
-      border-radius: 4px;
-      font-family: monospace;
-      font-size: 1.1rem;
-      background-color: white;
-      text-align: center;
-      text-transform: uppercase;
-      box-sizing: border-box;
-    }
+.revealed {
+  background:#e0f7fa;
+}
 
-    .revealed {
-      background-color: #e0f7fa;
-    }
+.button-row {
+  display:flex;
+  gap:8px;
+  flex-wrap:wrap;
+  justify-content:center;
+  margin-top:12px;
+}
 
-    .button-row {
-      display: flex;
-      gap: 8px;
-      flex-wrap: wrap;
-      justify-content: center;
-      margin-top: 12px;
-    }
+button {
+  padding:8px 13px;
+  font-size:.95rem;
+  border:none;
+  border-radius:10px;
+  cursor:pointer;
+  background:#d8ecf3;
+}
 
-    button {
-      padding: 8px 13px;
-      font-size: 0.95rem;
-      border: none;
-      border-radius: 10px;
-      cursor: pointer;
-      background-color: #d8ecf3;
-    }
+#reset-puzzle {
+  background:#f3d8d8;
+}
 
-    button:hover {
-      background-color: #bfe2ea;
-    }
+#hint-text {
+  max-width:420px;
+  font-size:.9rem;
+  font-style:italic;
+  color:#666;
+  margin-top:12px;
+  display:none;
+  text-align:center;
+}
 
-    #reset-puzzle {
-      background-color: #f3d8d8;
-    }
+#message {
+  max-width:420px;
+  font-size:.95rem;
+  color:#008080;
+  margin-top:10px;
+  font-style:italic;
+  text-align:center;
+}
 
-    #reset-puzzle:hover {
-      background-color: #e9bcbc;
-    }
-
-    #hint-text {
-      max-width: 420px;
-      font-size: 0.9rem;
-      font-style: italic;
-      color: #666;
-      margin-top: 12px;
-      display: none;
-      text-align: center;
-    }
-
-    #message {
-      max-width: 420px;
-      font-size: 0.95rem;
-      color: var(--teal);
-      margin-top: 10px;
-      font-style: italic;
-      text-align: center;
-    }
-
-    @media (max-width: 430px) {
-      .game-container {
-        height: 385px;
-      }
-
-      .x-axis {
-        bottom: 165px;
-      }
-
-      .axis-t {
-        bottom: 138px;
-      }
-
-      .majorana-dot {
-        bottom: 150px;
-      }
-
-      .majorana-label {
-        bottom: 124px;
-      }
-
-      .neutrino-orbit {
-        bottom: 118px;
-      }
-
-      .hint-column {
-        width: 110px;
-        font-size: 0.85rem;
-        top: 92px;
-      }
-
-      .letter-box {
-        width: 31px;
-        height: 31px;
-      }
-    }
-  </style>
+@media (max-width:430px) {
+  .game-container { height:385px; }
+  .hint-column { width:108px; font-size:.85rem; top:92px; }
+  .letter-box { width:31px; height:31px; }
+}
+</style>
 </head>
 
 <body>
-  <h1>Contronym</h1>
-  <h2>The Majorana of Meaning</h2>
+<h1>Contronym</h1>
+<h2>The Majorana of Meaning</h2>
 
-  <div class="game-container">
-    <div class="axis x-axis"></div>
-    <div class="axis y-axis"></div>
+<div class="game-container">
+  <div class="axis x-axis"></div>
+  <div class="axis y-axis"></div>
 
-    <span class="axis-letter axis-c">C</span>
-    <span class="axis-letter axis-t">T</span>
+  <span class="axis-letter axis-c">C</span>
+  <span class="axis-letter axis-t">T</span>
 
-    <div class="hint-column negative-hints" id="negative-hints"></div>
-    <div class="hint-column positive-hints" id="positive-hints"></div>
+  <div class="hint-column negative-hints" id="negative-hints"></div>
+  <div class="hint-column positive-hints" id="positive-hints"></div>
 
-    <svg class="curve-svg" viewBox="0 0 400 400" preserveAspectRatio="none" aria-hidden="true">
-      <!-- Vertex sits just below the transverse axis. -->
-      <path
-        d="M 82 70 Q 200 270 318 70"
-        stroke="#00bfff"
-        stroke-width="2.5"
-        stroke-dasharray="7 7"
-        fill="none"
-      />
-    </svg>
+  <svg class="curve-svg" viewBox="0 0 400 400" preserveAspectRatio="none">
+    <!-- x-axis is visually around y=250; vertex is y=300, clearly below it -->
+    <path d="M 70 70 Q 200 300 330 70"
+      stroke="#00bfff"
+      stroke-width="2.5"
+      stroke-dasharray="7 7"
+      fill="none" />
+  </svg>
 
-    <div class="majorana-dot" aria-hidden="true"></div>
-    <div class="majorana-label">Majorana</div>
+  <svg class="neutrino-trail" viewBox="0 0 190 125">
+    <path d="M 5 62
+             C 35 5, 75 5, 95 62
+             C 115 120, 155 120, 185 62
+             C 155 5, 115 5, 95 62
+             C 75 120, 35 120, 5 62"
+      stroke="#777"
+      stroke-width="2"
+      stroke-dasharray="5 5"
+      fill="none" />
+    <text x="170" y="58" font-size="23" font-style="italic" font-family="Georgia,serif">ν</text>
+  </svg>
 
-    <svg class="neutrino-orbit" viewBox="0 0 148 92" aria-hidden="true">
-      <path
-        d="M 10 50
-           C 28 12, 60 12, 74 46
-           C 92 88, 132 82, 138 46
-           C 126 10, 92 10, 74 46
-           C 56 84, 24 84, 10 50"
-        stroke="#777"
-        stroke-width="2"
-        stroke-dasharray="5 5"
-        fill="none"
-      />
-      <text
-        x="130"
-        y="44"
-        font-size="22"
-        font-style="italic"
-        font-family="Georgia, serif"
-        fill="#333"
-      >ν</text>
-    </svg>
-  </div>
+  <div class="majorana-dot"></div>
+  <div class="majorana-label">Majorana</div>
+</div>
 
-  <div class="answer-boxes" id="answer-boxes"></div>
+<div class="answer-boxes" id="answer-boxes"></div>
 
-  <div class="button-row">
-    <button id="show-hint">Reveal Hint Word</button>
-    <button id="reveal-letter">Reveal Letter</button>
-    <button id="reset-puzzle">Reset</button>
-  </div>
+<div class="button-row">
+  <button id="show-hint">Reveal Hint Word</button>
+  <button id="reveal-letter">Reveal Letter</button>
+  <button id="reset-puzzle">Reset</button>
+</div>
 
-  <p id="hint-text"></p>
-  <p id="message"></p>
+<p id="hint-text"></p>
+<p id="message"></p>
 
-  <script>
-    // === EDIT ONLY THIS SECTION EACH WEEK ===
-    const puzzle = {
-      word: "SANCTION",
-      hints: [
-        { word: "restrict", charge: "-" },
-        { word: "permit", charge: "+" },
-        { word: "penalize", charge: "-" },
-        { word: "authorize", charge: "+" },
-        { word: "punish", charge: "-" },
-        { word: "approve", charge: "+" }
-      ],
-      message: "A word that can officially approve or penalize depending on context."
-    };
+<script>
+const puzzle = {
+  word: "SANCTION",
+  hints: [
+    { word: "restrict", charge: "-" },
+    { word: "permit", charge: "+" },
+    { word: "penalize", charge: "-" },
+    { word: "authorize", charge: "+" },
+    { word: "punish", charge: "-" },
+    { word: "approve", charge: "+" }
+  ],
+  message: "A word that can officially approve or penalize depending on context."
+};
 
-    const word = puzzle.word.toUpperCase();
-    let visibleHintCount = 2;
-    let completedLogged = false;
+const word = puzzle.word.toUpperCase();
+let visibleHintCount = 2;
+let completedLogged = false;
 
-    const answerBoxes = document.getElementById("answer-boxes");
-    const hintText = document.getElementById("hint-text");
-    const showHintBtn = document.getElementById("show-hint");
-    const revealLetterBtn = document.getElementById("reveal-letter");
-    const resetBtn = document.getElementById("reset-puzzle");
-    const message = document.getElementById("message");
+const answerBoxes = document.getElementById("answer-boxes");
+const hintText = document.getElementById("hint-text");
+const showHintBtn = document.getElementById("show-hint");
+const revealLetterBtn = document.getElementById("reveal-letter");
+const resetBtn = document.getElementById("reset-puzzle");
+const message = document.getElementById("message");
 
-    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyk7Kx-U0hQ1k3B5FGVYsrNMIpvksribCqk2-2GT8Bmwoo8PhX1r3gu-bZo747Dr727/exec";
+function renderHints() {
+  const shownHints = puzzle.hints.slice(0, visibleHintCount);
 
-    function logPuzzleEvent(puzzleWord, action, player = "") {
-      fetch(SCRIPT_URL, {
-        method: "POST",
-        headers: { "Content-Type": "text/plain;charset=utf-8" },
-        body: JSON.stringify({ puzzle: puzzleWord, action, player })
-      }).catch(err => console.error("Logging failed:", err));
-    }
+  document.getElementById("negative-hints").innerHTML =
+    shownHints
+      .filter(h => h.charge === "-")
+      .map(h => `<div class="hint-word">${h.word}<span class="charge">−</span></div>`)
+      .join("");
 
-    function renderHints() {
-      const shownHints = puzzle.hints.slice(0, visibleHintCount);
+  document.getElementById("positive-hints").innerHTML =
+    shownHints
+      .filter(h => h.charge === "+")
+      .map(h => `<div class="hint-word">${h.word}<span class="charge">+</span></div>`)
+      .join("");
 
-      document.getElementById("negative-hints").innerHTML =
-        shownHints
-          .filter(h => h.charge === "-")
-          .map(h => `<div class="hint-word">${h.word}<span class="charge">−</span></div>`)
-          .join("");
+  hintText.textContent = puzzle.message;
+  showHintBtn.textContent =
+    visibleHintCount >= puzzle.hints.length ? "Show Full Hint" : "Reveal Hint Word";
+}
 
-      document.getElementById("positive-hints").innerHTML =
-        shownHints
-          .filter(h => h.charge === "+")
-          .map(h => `<div class="hint-word">${h.word}<span class="charge">+</span></div>`)
-          .join("");
+function createAnswerBoxes() {
+  answerBoxes.innerHTML = "";
+  for (let i = 0; i < word.length; i++) {
+    const box = document.createElement("input");
+    box.type = "text";
+    box.maxLength = 1;
+    box.className = "letter-box";
+    box.dataset.index = i;
+    answerBoxes.appendChild(box);
+  }
+}
 
-      hintText.textContent = puzzle.message;
+answerBoxes.addEventListener("input", e => {
+  const target = e.target;
+  const index = Number(target.dataset.index);
+  target.value = target.value.toUpperCase();
 
-      if (visibleHintCount >= puzzle.hints.length) {
-        showHintBtn.textContent = "Show Full Hint";
-      } else {
-        showHintBtn.textContent = "Reveal Hint Word";
-      }
-    }
+  if (target.value.length === 1) {
+    const next = answerBoxes.children[index + 1];
+    if (next) next.focus();
+  }
 
-    function createAnswerBoxes() {
-      answerBoxes.innerHTML = "";
+  checkWord();
+});
 
-      for (let i = 0; i < word.length; i++) {
-        const box = document.createElement("input");
-        box.type = "text";
-        box.maxLength = 1;
-        box.className = "letter-box";
-        box.dataset.index = i;
-        box.setAttribute("aria-label", `Letter ${i + 1}`);
-        answerBoxes.appendChild(box);
-      }
-    }
+answerBoxes.addEventListener("keydown", e => {
+  const target = e.target;
+  const index = Number(target.dataset.index);
 
-    answerBoxes.addEventListener("input", (e) => {
-      const target = e.target;
-      const index = parseInt(target.dataset.index);
-      target.value = target.value.toUpperCase();
+  if (e.key === "Backspace" && target.value === "") {
+    const previous = answerBoxes.children[index - 1];
+    if (previous) previous.focus();
+  }
+});
 
-      if (target.value.length === 1) {
-        const next = answerBoxes.children[index + 1];
-        if (next) next.focus();
-      }
-
-      checkWord();
-    });
-
-    answerBoxes.addEventListener("keydown", (e) => {
-      const target = e.target;
-      const index = parseInt(target.dataset.index);
-
-      if (e.key === "Backspace" && target.value === "") {
-        const previous = answerBoxes.children[index - 1];
-        if (previous) previous.focus();
-      }
-    });
-
-    showHintBtn.addEventListener("click", () => {
-      if (visibleHintCount < puzzle.hints.length) {
-        visibleHintCount++;
-        renderHints();
-        logPuzzleEvent(word, "hint_word_revealed");
-      } else {
-        hintText.style.display = "block";
-        logPuzzleEvent(word, "full_hint_shown");
-      }
-    });
-
-    revealLetterBtn.addEventListener("click", () => {
-      const boxes = Array.from(answerBoxes.children);
-      const unrevealed = boxes.filter((box, i) => box.value.toUpperCase() !== word[i]);
-
-      if (unrevealed.length === 0) return;
-
-      const randomBox = unrevealed[Math.floor(Math.random() * unrevealed.length)];
-      const i = parseInt(randomBox.dataset.index);
-
-      randomBox.value = word[i];
-      randomBox.classList.add("revealed");
-
-      logPuzzleEvent(word, "letter_revealed", `index_${i}`);
-      checkWord();
-    });
-
-    resetBtn.addEventListener("click", () => {
-      for (let box of answerBoxes.children) {
-        box.value = "";
-        box.classList.remove("revealed");
-      }
-
-      visibleHintCount = 2;
-      completedLogged = false;
-      hintText.style.display = "none";
-      message.textContent = "";
-      renderHints();
-
-      logPuzzleEvent(word, "reset");
-    });
-
-    function checkWord() {
-      let current = "";
-
-      for (let box of answerBoxes.children) {
-        current += box.value.toUpperCase();
-      }
-
-      if (current === word) {
-        message.textContent =
-          "You’ve found the Majorana of Meaning — one word, two opposite charges.";
-
-        if (!completedLogged) {
-          logPuzzleEvent(word, "completed");
-          completedLogged = true;
-        }
-      } else {
-        message.textContent = "";
-      }
-    }
-
+showHintBtn.addEventListener("click", () => {
+  if (visibleHintCount < puzzle.hints.length) {
+    visibleHintCount++;
     renderHints();
-    createAnswerBoxes();
-    logPuzzleEvent(word, "page_load");
-  </script>
+  } else {
+    hintText.style.display = "block";
+  }
+});
+
+revealLetterBtn.addEventListener("click", () => {
+  const boxes = Array.from(answerBoxes.children);
+  const unrevealed = boxes.filter((box, i) => box.value.toUpperCase() !== word[i]);
+  if (!unrevealed.length) return;
+
+  const randomBox = unrevealed[Math.floor(Math.random() * unrevealed.length)];
+  const i = Number(randomBox.dataset.index);
+
+  randomBox.value = word[i];
+  randomBox.classList.add("revealed");
+  checkWord();
+});
+
+resetBtn.addEventListener("click", () => {
+  for (let box of answerBoxes.children) {
+    box.value = "";
+    box.classList.remove("revealed");
+  }
+
+  visibleHintCount = 2;
+  completedLogged = false;
+  hintText.style.display = "none";
+  message.textContent = "";
+  renderHints();
+});
+
+function checkWord() {
+  let current = "";
+  for (let box of answerBoxes.children) {
+    current += box.value.toUpperCase();
+  }
+
+  if (current === word) {
+    message.textContent =
+      "You’ve found the Majorana of Meaning — one word, two opposite charges.";
+    completedLogged = true;
+  } else {
+    message.textContent = "";
+  }
+}
+
+renderHints();
+createAnswerBoxes();
+</script>
 </body>
 </html>
