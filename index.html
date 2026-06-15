@@ -16,138 +16,119 @@
   let visibleHintCount = 2;
   let completedLogged = false;
 
-  const answerBoxes = document.getElementById("answer-boxes");
-  const hintText = document.getElementById("hint-text");
-  const showHintBtn = document.getElementById("show-hint");
-  const revealLetterBtn = document.getElementById("reveal-letter");
-  const resetBtn = document.getElementById("reset-puzzle");
-  const message = document.getElementById("message");
-  const leftLabel = document.getElementById("left-label");
-  const rightLabel = document.getElementById("right-label");
+  document.addEventListener("DOMContentLoaded", () => {
+    const answerBoxes = document.getElementById("answer-boxes");
+    const hintText = document.getElementById("hint-text");
+    const showHintBtn = document.getElementById("show-hint");
+    const revealLetterBtn = document.getElementById("reveal-letter");
+    const resetBtn = document.getElementById("reset-puzzle");
+    const message = document.getElementById("message");
+    const leftLabel = document.getElementById("left-label");
+    const rightLabel = document.getElementById("right-label");
 
-  const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyk7Kx-U0hQ1k3B5FGVYsrNMIpvksribCqk2-2GT8Bmwoo8PhX1r3gu-bZo747Dr727/exec";
+    function renderHints() {
+      const shownHints = puzzle.hints.slice(0, visibleHintCount);
 
-  function logPuzzleEvent(puzzleWord, action, player = "") {
-    fetch(SCRIPT_URL, {
-      method: "POST",
-      headers: { "Content-Type": "text/plain;charset=utf-8" },
-      body: JSON.stringify({ puzzle: puzzleWord, action, player })
-    }).catch(err => console.log("Logging skipped:", err));
-  }
+      leftLabel.innerHTML =
+        shownHints
+          .filter(h => h.charge === "-")
+          .map(h => `${h.word}<sup>−</sup>`)
+          .join("<br>") || "negative";
 
-  function renderHints() {
-    const shownHints = puzzle.hints.slice(0, visibleHintCount);
+      rightLabel.innerHTML =
+        shownHints
+          .filter(h => h.charge === "+")
+          .map(h => `${h.word}<sup>+</sup>`)
+          .join("<br>") || "positive";
 
-    const negativeHints = shownHints
-      .filter(h => h.charge === "-")
-      .map(h => `${h.word}<sup>−</sup>`)
-      .join("<br>");
+      hintText.textContent = puzzle.message;
 
-    const positiveHints = shownHints
-      .filter(h => h.charge === "+")
-      .map(h => `${h.word}<sup>+</sup>`)
-      .join("<br>");
-
-    if (leftLabel) leftLabel.innerHTML = negativeHints || "negative";
-    if (rightLabel) rightLabel.innerHTML = positiveHints || "positive";
-    if (hintText) hintText.textContent = puzzle.message;
-
-    if (showHintBtn) {
       showHintBtn.textContent =
-        visibleHintCount >= puzzle.hints.length ? "Show Full Hint" : "Reveal Hint Word";
-    }
-  }
-
-  function createBoxes() {
-    answerBoxes.innerHTML = "";
-
-    for (let i = 0; i < word.length; i++) {
-      const box = document.createElement("input");
-      box.type = "text";
-      box.maxLength = 1;
-      box.className = "letter-box";
-      box.dataset.index = i;
-      answerBoxes.appendChild(box);
-    }
-  }
-
-  createBoxes();
-  renderHints();
-  logPuzzleEvent(word, "page_load");
-
-  answerBoxes.addEventListener("input", (e) => {
-    const target = e.target;
-    const index = parseInt(target.dataset.index);
-
-    target.value = target.value.toUpperCase();
-
-    if (target.value.length === 1) {
-      const next = answerBoxes.children[index + 1];
-      if (next) next.focus();
+        visibleHintCount >= puzzle.hints.length
+          ? "Show Full Hint"
+          : "Reveal Hint Word";
     }
 
-    checkWord();
-  });
+    function createBoxes() {
+      answerBoxes.innerHTML = "";
 
-  showHintBtn.addEventListener("click", () => {
-    if (visibleHintCount < puzzle.hints.length) {
-      visibleHintCount++;
-      renderHints();
-      logPuzzleEvent(word, "hint_word_revealed");
-    } else {
-      hintText.style.display = "block";
-      logPuzzleEvent(word, "full_hint_shown");
-    }
-  });
-
-  revealLetterBtn.addEventListener("click", () => {
-    const boxes = Array.from(answerBoxes.children);
-    const unrevealed = boxes.filter((box, i) => box.value.toUpperCase() !== word[i]);
-
-    if (unrevealed.length === 0) return;
-
-    const randomBox = unrevealed[Math.floor(Math.random() * unrevealed.length)];
-    const i = parseInt(randomBox.dataset.index);
-
-    randomBox.value = word[i];
-    randomBox.classList.add("revealed");
-
-    logPuzzleEvent(word, "letter_revealed", `index_${i}`);
-    checkWord();
-  });
-
-  resetBtn.addEventListener("click", () => {
-    for (let box of answerBoxes.children) {
-      box.value = "";
-      box.classList.remove("revealed");
-    }
-
-    visibleHintCount = 2;
-    completedLogged = false;
-    renderHints();
-    hintText.style.display = "none";
-    message.textContent = "";
-
-    logPuzzleEvent(word, "reset");
-  });
-
-  function checkWord() {
-    let current = "";
-
-    for (let box of answerBoxes.children) {
-      current += box.value.toUpperCase();
-    }
-
-    if (current === word) {
-      message.textContent =
-        "You’ve found the Majorana of Meaning — one word, two opposite charges.";
-
-      if (!completedLogged) {
-        logPuzzleEvent(word, "completed");
-        completedLogged = true;
+      for (let i = 0; i < word.length; i++) {
+        const box = document.createElement("input");
+        box.type = "text";
+        box.maxLength = 1;
+        box.className = "letter-box";
+        box.dataset.index = i;
+        answerBoxes.appendChild(box);
       }
-    } else {
-      message.textContent = "";
     }
-  }
+
+    function checkWord() {
+      let current = "";
+
+      for (let box of answerBoxes.children) {
+        current += box.value.toUpperCase();
+      }
+
+      if (current === word) {
+        message.textContent =
+          "You’ve found the Majorana of Meaning — one word, two opposite charges.";
+        completedLogged = true;
+      } else {
+        message.textContent = "";
+      }
+    }
+
+    createBoxes();
+    renderHints();
+
+    answerBoxes.addEventListener("input", (e) => {
+      const target = e.target;
+      const index = parseInt(target.dataset.index);
+
+      target.value = target.value.toUpperCase();
+
+      if (target.value.length === 1) {
+        const next = answerBoxes.children[index + 1];
+        if (next) next.focus();
+      }
+
+      checkWord();
+    });
+
+    showHintBtn.addEventListener("click", () => {
+      if (visibleHintCount < puzzle.hints.length) {
+        visibleHintCount++;
+        renderHints();
+      } else {
+        hintText.style.display = "block";
+      }
+    });
+
+    revealLetterBtn.addEventListener("click", () => {
+      const boxes = Array.from(answerBoxes.children);
+      const unrevealed = boxes.filter((box, i) => box.value.toUpperCase() !== word[i]);
+
+      if (unrevealed.length === 0) return;
+
+      const randomBox = unrevealed[Math.floor(Math.random() * unrevealed.length)];
+      const i = parseInt(randomBox.dataset.index);
+
+      randomBox.value = word[i];
+      randomBox.classList.add("revealed");
+      checkWord();
+    });
+
+    resetBtn.addEventListener("click", () => {
+      for (let box of answerBoxes.children) {
+        box.value = "";
+        box.classList.remove("revealed");
+      }
+
+      visibleHintCount = 2;
+      completedLogged = false;
+      renderHints();
+      hintText.style.display = "none";
+      message.textContent = "";
+    });
+  });
 </script>
