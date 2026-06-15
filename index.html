@@ -3,24 +3,36 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
   <title>Contronym: The Majorana of Meaning</title>
 
   <style>
+    :root {
+      --paper: #f9f7f2;
+      --ink: #333333;
+      --blue: #0057a8;
+      --curve-blue: #00bfff;
+      --red: #b11b2b;
+      --teal: #008080;
+    }
+
     body {
       font-family: system-ui, sans-serif;
-      background-color: #f9f7f2;
-      color: #333;
+      background-color: var(--paper);
+      color: var(--ink);
       display: flex;
       flex-direction: column;
       align-items: center;
       min-height: 100vh;
       padding: 28px 12px;
       margin: 0;
+      box-sizing: border-box;
     }
 
     h1 {
       font-size: clamp(2rem, 8vw, 2.8rem);
       margin: 0;
+      letter-spacing: 0.02em;
     }
 
     h2 {
@@ -28,6 +40,7 @@
       font-style: italic;
       margin: 0.25em 0 1.2em;
       text-align: center;
+      font-weight: 500;
     }
 
     .game-container {
@@ -39,14 +52,14 @@
 
     .axis {
       position: absolute;
-      z-index: 1;
+      z-index: 2;
     }
 
     .x-axis {
       width: 100%;
       height: 2px;
-      background: #0057a8;
-      bottom: 110px;
+      background: var(--blue);
+      bottom: 175px;
       left: 0;
     }
 
@@ -56,7 +69,31 @@
       left: 50%;
       bottom: 0;
       transform: translateX(-50%);
-      background: #b11b2b;
+      background: var(--red);
+    }
+
+    .axis-letter {
+      position: absolute;
+      z-index: 7;
+      font-family: Georgia, "Times New Roman", serif;
+      font-style: italic;
+      font-weight: 800;
+      line-height: 1;
+      text-shadow: 0 1px 0 rgba(249, 247, 242, 0.9);
+    }
+
+    .axis-c {
+      top: 8px;
+      left: calc(50% + 8px);
+      color: var(--red);
+      font-size: 2.2rem;
+    }
+
+    .axis-t {
+      bottom: 148px;
+      right: 8px;
+      color: var(--blue);
+      font-size: 2.1rem;
     }
 
     .curve-svg {
@@ -65,39 +102,46 @@
       bottom: 0;
       width: 100%;
       height: 400px;
-      z-index: 0;
+      z-index: 1;
       overflow: visible;
     }
 
-    .label {
+    .majorana-dot {
       position: absolute;
-      font-style: italic;
-      font-size: 0.8rem;
-      z-index: 3;
+      left: 50%;
+      bottom: 160px;
+      width: 14px;
+      height: 14px;
+      transform: translate(-50%, 50%);
+      border-radius: 50%;
+      background: var(--ink);
+      z-index: 6;
+      box-shadow: 0 0 0 4px rgba(249, 247, 242, 0.85);
     }
 
-    .x-label {
-      bottom: 86px;
-      right: 8px;
-      color: #0057a8;
-    }
-
-    .y-label {
-      top: 8px;
-      left: 52%;
-      color: #b11b2b;
+    .majorana-label {
+      position: absolute;
+      left: 50%;
+      bottom: 134px;
+      transform: translateX(-50%);
+      font-size: 0.76rem;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      color: var(--ink);
+      z-index: 6;
+      white-space: nowrap;
     }
 
     .hint-column {
       position: absolute;
-      top: 82px;
+      top: 88px;
       width: 130px;
       display: flex;
       flex-direction: column;
       gap: 10px;
       font-style: italic;
       font-size: 0.95rem;
-      z-index: 4;
+      z-index: 8;
     }
 
     .negative-hints {
@@ -108,20 +152,38 @@
 
     .positive-hints {
       right: 10px;
-      color: #0057a8;
+      color: var(--blue);
       text-align: right;
+    }
+
+    .hint-word {
+      background: rgba(249, 247, 242, 0.78);
+      border-radius: 8px;
+      padding: 2px 5px;
+      width: fit-content;
+      max-width: 120px;
+    }
+
+    .positive-hints .hint-word {
+      margin-left: auto;
     }
 
     .charge {
       font-size: 0.75rem;
       vertical-align: super;
-      font-weight: 800;
+      font-weight: 900;
       margin-left: 2px;
+      font-style: normal;
     }
 
-    .neutrino-path {
-      position: relative;
-      height: 80px;
+    .neutrino-orbit {
+      position: absolute;
+      left: 50%;
+      bottom: 128px;
+      transform: translateX(-50%);
+      width: 148px;
+      height: 92px;
+      z-index: 5;
       pointer-events: none;
     }
 
@@ -137,13 +199,14 @@
     .letter-box {
       width: 34px;
       height: 34px;
-      border: 1px solid #333;
+      border: 1px solid var(--ink);
       border-radius: 4px;
       font-family: monospace;
       font-size: 1.1rem;
       background-color: white;
       text-align: center;
       text-transform: uppercase;
+      box-sizing: border-box;
     }
 
     .revealed {
@@ -192,7 +255,7 @@
     #message {
       max-width: 420px;
       font-size: 0.95rem;
-      color: #008080;
+      color: var(--teal);
       margin-top: 10px;
       font-style: italic;
       text-align: center;
@@ -200,13 +263,33 @@
 
     @media (max-width: 430px) {
       .game-container {
-        height: 380px;
+        height: 385px;
+      }
+
+      .x-axis {
+        bottom: 165px;
+      }
+
+      .axis-t {
+        bottom: 138px;
+      }
+
+      .majorana-dot {
+        bottom: 150px;
+      }
+
+      .majorana-label {
+        bottom: 124px;
+      }
+
+      .neutrino-orbit {
+        bottom: 118px;
       }
 
       .hint-column {
-        width: 105px;
+        width: 110px;
         font-size: 0.85rem;
-        top: 88px;
+        top: 92px;
       }
 
       .letter-box {
@@ -225,33 +308,46 @@
     <div class="axis x-axis"></div>
     <div class="axis y-axis"></div>
 
+    <span class="axis-letter axis-c">C</span>
+    <span class="axis-letter axis-t">T</span>
+
     <div class="hint-column negative-hints" id="negative-hints"></div>
     <div class="hint-column positive-hints" id="positive-hints"></div>
 
-    <span class="label x-label">transverse</span>
-    <span class="label y-label">conjugate</span>
-
-    <svg class="curve-svg" viewBox="0 0 400 400" preserveAspectRatio="none">
+    <svg class="curve-svg" viewBox="0 0 400 400" preserveAspectRatio="none" aria-hidden="true">
+      <!-- Vertex sits just below the transverse axis. -->
       <path
-        d="M 90 70 Q 200 340 310 70"
+        d="M 82 70 Q 200 270 318 70"
         stroke="#00bfff"
         stroke-width="2.5"
         stroke-dasharray="7 7"
         fill="none"
       />
     </svg>
-  </div>
 
-  <div class="neutrino-path">
-    <svg width="240" height="80" viewBox="0 0 240 80">
+    <div class="majorana-dot" aria-hidden="true"></div>
+    <div class="majorana-label">Majorana</div>
+
+    <svg class="neutrino-orbit" viewBox="0 0 148 92" aria-hidden="true">
       <path
-        d="M 10 48 C 40 10, 80 76, 120 48 S 200 4, 230 48"
-        stroke="#888"
+        d="M 10 50
+           C 28 12, 60 12, 74 46
+           C 92 88, 132 82, 138 46
+           C 126 10, 92 10, 74 46
+           C 56 84, 24 84, 10 50"
+        stroke="#777"
         stroke-width="2"
         stroke-dasharray="5 5"
         fill="none"
       />
-      <text x="224" y="54" font-size="22" font-style="italic" font-family="serif" fill="#333">ν</text>
+      <text
+        x="130"
+        y="44"
+        font-size="22"
+        font-style="italic"
+        font-family="Georgia, serif"
+        fill="#333"
+      >ν</text>
     </svg>
   </div>
 
@@ -308,13 +404,13 @@
       document.getElementById("negative-hints").innerHTML =
         shownHints
           .filter(h => h.charge === "-")
-          .map(h => `<div>${h.word}<span class="charge">−</span></div>`)
+          .map(h => `<div class="hint-word">${h.word}<span class="charge">−</span></div>`)
           .join("");
 
       document.getElementById("positive-hints").innerHTML =
         shownHints
           .filter(h => h.charge === "+")
-          .map(h => `<div>${h.word}<span class="charge">+</span></div>`)
+          .map(h => `<div class="hint-word">${h.word}<span class="charge">+</span></div>`)
           .join("");
 
       hintText.textContent = puzzle.message;
