@@ -85,6 +85,29 @@
       color: #b11b2b;
     }
 
+    .axis-symbol {
+  position: absolute;
+  font-family: "Times New Roman", serif;
+  font-style: italic;
+  font-weight: bold;
+  font-size: 2rem;
+  z-index: 5;
+  background: rgba(249,247,242,0.95);
+  padding: 0 4px;
+}
+
+.axis-c {
+  color: #b11b2b;
+  top: 8px;
+  left: calc(50% + 12px);
+}
+
+.axis-t {
+  color: #0057a8;
+  right: 8px;
+  bottom: 55px;
+}
+
     .parabola-svg {
       position: absolute;
       bottom: -90px;
@@ -179,8 +202,8 @@
 
     <span class="label left-label" id="left-label"></span>
     <span class="label right-label" id="right-label"></span>
-    <span class="label x-label">transverse</span>
-    <span class="label y-label">conjugate</span>
+ <span class="axis-symbol axis-t">T</span>
+<span class="axis-symbol axis-c">C</span>
 
     <svg class="parabola-svg" width="400" height="340" viewBox="0 0 400 340">
 <path d="M 95 35 Q 200 340 305 35"
