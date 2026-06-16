@@ -199,9 +199,7 @@ button {
   line-height: 1.45;
 }
 
-.definition-box strong {
-  color: #333;
-}
+.definition-box strong { color: #333; }
 
 .share-preview {
   margin-top: 12px;
@@ -222,6 +220,15 @@ button {
   margin-top: 10px;
 }
 
+.footer-note {
+  margin-top: 18px;
+  margin-bottom: 20px;
+  font-size: 0.78rem;
+  color: #666;
+  font-style: italic;
+  text-align: center;
+}
+
 sup {
   font-weight: 800;
   font-style: normal;
@@ -233,21 +240,17 @@ sup {
   body { padding-top: 20px; }
   h1 { font-size: 2rem; }
   h2 { font-size: 1rem; }
-
   .game-container { height: 340px; }
-
   .left-label {
     left: 8px;
     bottom: 190px;
     font-size: 0.75rem;
   }
-
   .right-label {
     right: 8px;
     bottom: 190px;
     font-size: 0.75rem;
   }
-
   .letter-box {
     width: 31px;
     height: 34px;
@@ -289,7 +292,7 @@ sup {
 
 <div class="answer-boxes" id="answer-boxes"></div>
 
-<p id="attempts">Attempts: 0 / 3</p>
+<p id="attempts">Contronym #001 • Attempts: 0 / 3 • Hints used: 0</p>
 
 <div class="button-row">
   <button id="submit-answer">Submit Answer</button>
@@ -303,9 +306,7 @@ sup {
 <div id="result-card">
   <div class="majorana-logo">Cν</div>
   <div class="result-title" id="result-title"></div>
-
   <div class="definition-box" id="definition-box"></div>
-
   <div class="share-preview" id="share-preview"></div>
 
   <div class="share-buttons">
@@ -314,8 +315,12 @@ sup {
   </div>
 </div>
 
+<div class="footer-note">Context determines charge. Play again next week at PAT Tutoring.</div>
+
 <script>
 const puzzle = {
+  number: "001",
+  date: "June 2026",
   word: "SANCTION",
   hints: [
     { word: "restrict", charge: "-" },
@@ -329,13 +334,15 @@ const puzzle = {
   positiveDefinition: "to officially approve, permit, or authorize something.",
   negativeDefinition: "to penalize, punish, or place restrictions on someone or something.",
   positiveExample: "The committee sanctioned the proposal.",
-  negativeExample: "The league sanctioned the player."
+  negativeExample: "The league sanctioned the player.",
+  footer: "Context determines charge. Play again next week at PAT Tutoring."
 };
 
 const word = puzzle.word.toUpperCase();
 let visibleHintCount = 2;
 let attempts = 0;
 let solved = false;
+let hintsUsed = 0;
 
 document.addEventListener("DOMContentLoaded", () => {
   const answerBoxes = document.getElementById("answer-boxes");
@@ -394,7 +401,8 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   function updateAttempts() {
-    attemptsText.textContent = `Attempts: ${attempts} / 3`;
+    attemptsText.textContent =
+      `Contronym #${puzzle.number} • Attempts: ${attempts} / 3 • Hints used: ${hintsUsed}`;
   }
 
   function lockGame() {
@@ -411,26 +419,36 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   function shareText() {
-    return `Cν Contronym
+    const positiveHint = puzzle.hints.find(h => h.charge === "+")?.word || "positive";
+    const negativeHint = puzzle.hints.find(h => h.charge === "-")?.word || "negative";
+
+    return `Cν Contronym #${puzzle.number}
 ${resultPhrase()}
 Attempts: ${attempts}/3
+Hints used: ${hintsUsed}
 Word: ${solved ? puzzle.word : "Unsolved"}
-+ ${puzzle.hints.find(h => h.charge === "+").word}
-− ${puzzle.hints.find(h => h.charge === "-").word}
 
-The Majorana of Meaning`;
++ ${positiveHint}
+− ${negativeHint}
+
+${puzzle.footer}`;
   }
 
   function showResult() {
     resultCard.style.display = "block";
-    resultTitle.textContent = resultPhrase();
+    resultTitle.textContent = `${resultPhrase()} • Contronym #${puzzle.number}`;
 
     definitionBox.innerHTML = `
-      <strong>${puzzle.word}</strong><br><br>
+      <strong>${puzzle.word}</strong><br>
+      <em>${puzzle.date}</em><br><br>
+
       <strong>Positive charge (+):</strong> ${puzzle.positiveDefinition}<br>
       <em>${puzzle.positiveExample}</em><br><br>
+
       <strong>Negative charge (−):</strong> ${puzzle.negativeDefinition}<br>
-      <em>${puzzle.negativeExample}</em>
+      <em>${puzzle.negativeExample}</em><br><br>
+
+      <strong>Field Note:</strong> ${puzzle.footer}
     `;
 
     sharePreview.textContent = shareText();
@@ -459,7 +477,8 @@ The Majorana of Meaning`;
       lockGame();
       showResult();
     } else {
-      message.textContent = `Not quite — ${3 - attempts} attempt${3 - attempts === 1 ? "" : "s"} left.`;
+      message.textContent =
+        `Not quite — charge mismatch. ${3 - attempts} attempt${3 - attempts === 1 ? "" : "s"} left.`;
     }
   }
 
@@ -498,7 +517,9 @@ The Majorana of Meaning`;
   showHintBtn.addEventListener("click", () => {
     if (visibleHintCount < puzzle.hints.length) {
       visibleHintCount++;
+      hintsUsed++;
       renderHints();
+      updateAttempts();
     } else {
       hintText.style.display = "block";
     }
@@ -507,6 +528,7 @@ The Majorana of Meaning`;
   resetBtn.addEventListener("click", () => {
     attempts = 0;
     solved = false;
+    hintsUsed = 0;
     visibleHintCount = 2;
 
     Array.from(answerBoxes.children).forEach(box => {
